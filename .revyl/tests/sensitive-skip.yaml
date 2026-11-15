@@ -1,0 +1,34 @@
+# Revyl Test Definition
+
+_meta:
+    remote_id: ac6e35b5-bc94-499f-86a0-3eb025079f04
+    remote_version: 1
+    local_version: 1
+    last_synced_at: "2026-11-15T10:34:24-08:00"
+    checksum: 6ec755ab70dba71f7ba34e9155f759e4c8a3892e1ce207b4e752e6cd9c8612cb
+test:
+    metadata:
+        name: sensitive-skip
+        platform: ios
+        tags:
+            - snapback
+            - privacy
+    build:
+        name: Snapback iOS
+    blocks:
+        - type: module_import
+          module: snapback-onboard-demo
+        - type: manual
+          step_type: wait
+          step_description: "15"
+        - type: while
+          condition: Is a swipeable card visible on the Inbox screen?
+          body:
+            - type: validation
+              step_description: The visible card does not mention a bank, an account balance, or Northside Bank.
+            - type: instructions
+              step_description: Tap the heart (Keep) button below the card.
+        - type: instructions
+          step_description: Open the Saved tab.
+        - type: validation
+          step_description: No saved item mentions a bank, a balance, or Northside Bank.

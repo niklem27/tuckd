@@ -1,0 +1,27 @@
+# Revyl Test Definition
+
+_meta:
+    remote_id: 70c98375-13e1-4217-836f-3fa88347a247
+    remote_version: 1
+    local_version: 1
+    last_synced_at: "2026-11-15T10:34:31-08:00"
+    checksum: e1c1d4a661b79c78db7cac3ef7f65a8df76e8670e417ae7c0253ac058cbd597c
+test:
+    metadata:
+        name: today-feed
+        platform: ios
+        tags:
+            - snapback
+            - core
+    build:
+        name: Snapback iOS
+    blocks:
+        - type: module_import
+          module: snapback-onboard-demo
+        - type: manual
+          step_type: wait
+          step_description: "15"
+        - type: instructions
+          step_description: Open the Today tab.
+        - type: validation
+          step_description: Under the "Today" section there is a Jazz Night item at 8:00 PM.
