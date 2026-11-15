@@ -19,6 +19,7 @@ export default function TabsLayout() {
     >
       <Tabs.Screen name="inbox" options={{ title: "Inbox", tabBarIcon: icon("albums"), tabBarButtonTestID: "tab-inbox", tabBarAccessibilityLabel: "Inbox tab" }} />
       <Tabs.Screen name="today" options={{ title: "Today", tabBarIcon: icon("sunny"), tabBarButtonTestID: "tab-today", tabBarAccessibilityLabel: "Today tab" }} />
+      <Tabs.Screen name="photos" options={{ title: "Photos", tabBarIcon: icon("camera"), tabBarButtonTestID: "tab-photos", tabBarAccessibilityLabel: "Photos tab" }} />
       <Tabs.Screen name="saved" options={{ title: "Saved", tabBarIcon: icon("bookmark"), tabBarButtonTestID: "tab-saved", tabBarAccessibilityLabel: "Saved tab" }} />
       <Tabs.Screen name="settings" options={{ title: "Settings", tabBarIcon: icon("settings"), tabBarButtonTestID: "tab-settings", tabBarAccessibilityLabel: "Settings tab" }} />
     </Tabs>

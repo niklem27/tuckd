@@ -59,6 +59,8 @@ export default defineSchema({
     attempts: v.number(),
     error: v.optional(v.string()),
     bytes: v.optional(v.number()),
+    originalDeleted: v.optional(v.boolean()),
+    originalBytes: v.optional(v.number()),
   })
     .index("by_user_asset", ["userId", "assetId"])
     .index("by_user_status", ["userId", "status"]),

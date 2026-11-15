@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const SYSTEM_PROMPT = (today: string, tz: string) =>
-  `You analyze a phone screenshot and decide what the user intended to save it for. Return ONLY JSON matching the schema. Today's date is ${today} and the user's timezone is ${tz}; resolve relative dates ("this Friday", "tonight") to ISO 8601. If the screenshot shows banking/financial balances, passwords, 2FA/OTP codes, IDs, medical records, or private intimate conversations, return {"sensitive": true}. Choose the single most useful type. Keep the title ≤ 6 words and the summary ≤ 15 words.
+  `You analyze a phone screenshot, or a photo the user took of something like a poster, flyer, menu, sign or label, and decide what the user intended to save it for. Return ONLY JSON matching the schema. Today's date is ${today} and the user's timezone is ${tz}; resolve relative dates ("this Friday", "tonight") to ISO 8601. If the screenshot shows banking/financial balances, passwords, 2FA/OTP codes, IDs, medical records, or private intimate conversations, return {"sensitive": true}. Choose the single most useful type. Keep the title ≤ 6 words and the summary ≤ 15 words.
 
 JSON schema:
 {

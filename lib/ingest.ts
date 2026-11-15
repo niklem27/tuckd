@@ -176,5 +176,21 @@ export function useIngest() {
     });
   }, [importSources]);
 
-  return { sync, loadDemo, uploading, error };
+  const scanPhotos = useCallback(
+    async (photos: { assetId?: string | null; uri: string; width: number; height: number }[]) => {
+      const now = Date.now();
+      return await importSources(async () =>
+        photos.map((p, i) => ({
+          assetId: p.assetId ? `photo:${p.assetId}` : `photo:${p.uri}`,
+          takenAt: now - i,
+          uri: p.uri,
+          width: p.width,
+          height: p.height,
+        })),
+      );
+    },
+    [importSources],
+  );
+
+  return { sync, loadDemo, scanPhotos, uploading, error };
 }
