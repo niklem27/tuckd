@@ -2,10 +2,10 @@
 
 _meta:
     remote_id: 73c29d4c-fbbe-4d87-9d3a-04ff0962778d
-    remote_version: 2
-    local_version: 2
-    last_synced_at: "2026-11-15T14:53:51-08:00"
-    checksum: 916285cb6401ab0eab3905b3d53fa0459234ab4b04082e1d73b36845da021156
+    remote_version: 3
+    local_version: 3
+    last_synced_at: "2026-11-15T15:47:57-08:00"
+    checksum: 551d5f96287ec0dc60cb20cc47b6d80847599cd7e56a73d481065a28bc0c9527
 test:
     metadata:
         name: inbox-zero
@@ -25,6 +25,6 @@ test:
           condition: Is a swipeable card visible on the Inbox screen?
           body:
             - type: instructions
-              step_description: Tap the X (Archive) button below the card.
+              step_description: Tap the X (Delete) button below the card.
         - type: validation
           step_description: The Inbox shows "All caught up" and a message saying how many screenshots were cleared this week.

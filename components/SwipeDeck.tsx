@@ -84,10 +84,10 @@ function TopCard({
       <Animated.View style={[StyleSheet.absoluteFill, cardStyle]}>
         <ItemCard item={item} index={0} onAct={onAct} />
         <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.keep + "33" }, keepStyle]}>
-          <Text style={[styles.stamp, { color: colors.keep, borderColor: colors.keep, transform: [{ rotate: "-12deg" }] }]}>KEEP</Text>
+          <Text style={[styles.stamp, { color: colors.keep, borderColor: colors.keep, transform: [{ rotate: "-12deg" }] }]}>TUCK</Text>
         </Animated.View>
         <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.archive + "33" }, archiveStyle]}>
-          <Text style={[styles.stamp, { color: colors.archive, borderColor: colors.archive, transform: [{ rotate: "12deg" }] }]}>ARCHIVE</Text>
+          <Text style={[styles.stamp, { color: colors.archive, borderColor: colors.archive, transform: [{ rotate: "12deg" }] }]}>DELETE</Text>
         </Animated.View>
         <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.accent + "33" }, actStyle]}>
           <Text style={[styles.stamp, { color: colors.accent, borderColor: colors.accent }]}>ACT NOW</Text>
@@ -155,9 +155,9 @@ export function SwipeDeck({
         </Animated.View>
       </View>
       <View style={styles.controls}>
-        <RoundButton testID="btn-archive" label="Archive" icon="close" color={colors.archive} onPress={() => commit(top, "left")} />
+        <RoundButton testID="btn-archive" label="Delete" icon="close" color={colors.archive} onPress={() => commit(top, "left")} />
         <RoundButton testID="btn-act-now" label="Act now" icon="flash" color={colors.accent} small onPress={() => commit(top, "up")} />
-        <RoundButton testID="btn-keep" label="Tuck" icon="heart" color={colors.keep} onPress={() => commit(top, "right")} />
+        <RoundButton testID="btn-keep" label="Tuck" icon="heart" color={colors.accent} onPress={() => commit(top, "right")} />
       </View>
     </View>
   );
@@ -188,7 +188,7 @@ function RoundButton({
       onPress={onPress}
       style={({ pressed }) => [
         styles.round,
-        { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surface, borderColor: color + "55", transform: [{ scale: pressed ? 0.9 : 1 }] },
+        { width: size, height: size, borderRadius: size / 2, backgroundColor: colors.surface, borderColor: colors.border, transform: [{ scale: pressed ? 0.9 : 1 }] },
       ]}
     >
       <Ionicons name={icon as any} size={small ? 22 : 28} color={color} />
@@ -199,17 +199,12 @@ function RoundButton({
 const styles = StyleSheet.create({
   wrap: { flex: 1, paddingHorizontal: 20 },
   stack: { flex: 1 },
-  overlay: { ...StyleSheet.absoluteFill, borderRadius: 20, alignItems: "center", justifyContent: "center" },
+  overlay: { ...StyleSheet.absoluteFill, borderRadius: 16, alignItems: "center", justifyContent: "center" },
   stamp: { fontSize: 38, fontWeight: "900", letterSpacing: 3, borderWidth: 4, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 6 },
   controls: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 28, paddingVertical: 18 },
   round: {
     alignItems: "center",
     justifyContent: "center",
-    borderWidth: 2,
-    shadowColor: "#000",
-    shadowOpacity: 0.1,
-    shadowRadius: 10,
-    shadowOffset: { width: 0, height: 4 },
-    elevation: 4,
+    borderWidth: 1,
   },
 });

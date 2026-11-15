@@ -27,8 +27,8 @@ export function Button({
   const { colors } = usePalette();
   const tint = color ?? colors.accent;
   const bg =
-    variant === "primary" ? tint : variant === "secondary" ? tint + "18" : variant === "danger" ? colors.archive + "18" : "transparent";
-  const fg = variant === "primary" ? "#fff" : variant === "danger" ? colors.archive : tint;
+    variant === "primary" ? colors.primary : variant === "secondary" ? tint + "14" : variant === "danger" ? colors.danger + "14" : "transparent";
+  const fg = variant === "primary" ? colors.onPrimary : variant === "danger" ? colors.danger : tint;
   return (
     <Pressable
       testID={testID}

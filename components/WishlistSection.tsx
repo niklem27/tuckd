@@ -58,7 +58,7 @@ export function WishlistSection({ items }: { items: WishlistEntry[] }) {
 const styles = StyleSheet.create({
   header: { flexDirection: "row", alignItems: "center", gap: 6, paddingHorizontal: 20 },
   title: { fontSize: 20, fontWeight: "800", flex: 1 },
-  list: { marginHorizontal: 20, borderRadius: 18, borderWidth: StyleSheet.hairlineWidth, overflow: "hidden" },
+  list: { marginHorizontal: 20, borderRadius: 16, borderWidth: 1, overflow: "hidden" },
   row: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12 },
   thumb: { width: 48, height: 48, borderRadius: 10 },
   placeholder: { alignItems: "center", justifyContent: "center" },

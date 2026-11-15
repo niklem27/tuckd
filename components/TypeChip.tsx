@@ -1,16 +1,15 @@
 import { Ionicons } from "@expo/vector-icons";
 import { StyleSheet, Text, View } from "react-native";
-import { ItemType, typeMeta } from "@/lib/theme";
+import { chipColors, ItemType, typeMeta, usePalette } from "@/lib/theme";
 
 export function TypeChip({ type, small }: { type: ItemType; small?: boolean }) {
+  const { dark } = usePalette();
   const meta = typeMeta[type];
+  const chip = chipColors(type, dark);
   return (
-    <View
-      style={[styles.chip, { backgroundColor: meta.color + "1F" }, small && styles.small]}
-      accessibilityLabel={`${meta.label} card`}
-    >
-      <Ionicons name={meta.icon as any} size={small ? 11 : 13} color={meta.color} />
-      <Text style={[styles.label, { color: meta.color }, small && styles.smallLabel]}>{meta.label}</Text>
+    <View style={[styles.chip, { backgroundColor: chip.background }, small && styles.small]} accessibilityLabel={`${meta.label} card`}>
+      <Ionicons name={meta.icon as any} size={small ? 11 : 13} color={chip.text} />
+      <Text style={[styles.label, { color: chip.text }, small && styles.smallLabel]}>{meta.label}</Text>
     </View>
   );
 }

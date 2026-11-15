@@ -57,7 +57,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
     async (item: ActionableItem) => {
       await archive({ itemId: item._id });
       cancelItemReminder(item._id);
-      notify("Archived", () => undo({ itemId: item._id }));
+      notify("Deleted", () => undo({ itemId: item._id }));
     },
     [archive, undo, notify],
   );
