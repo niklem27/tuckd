@@ -13,6 +13,7 @@ import { useIngestContext } from "@/components/IngestProvider";
 import { TypeChip } from "@/components/TypeChip";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { deleteOriginals } from "@/lib/originals";
 import { usePalette } from "@/lib/theme";
 
 const MAX_PICK = 10;
@@ -21,11 +22,11 @@ export default function PhotosScreen() {
   const { colors } = usePalette();
   const { isAuthenticated } = useConvexAuth();
   const data = useQuery(api.screenshots.photoScans, isAuthenticated ? {} : "skip");
-  const scans = data?.rows;
+  const scans = Array.isArray(data) ? data : data?.rows;
   const me = useQuery(api.profile.me, isAuthenticated ? {} : "skip");
   const upsert = useMutation(api.profile.upsert);
   const autoScan = me?.profile?.autoScanPhotos ?? false;
-  const markDeleted = useMutation(api.screenshots.markOriginalDeleted);
+  const markDeleted = useMutation(api.screenshots.markOriginalsDeleted);
   const { scanPhotos, sync, uploading } = useIngestContext();
 
   const toggleAutoScan = async (next: boolean) => {
@@ -63,15 +64,14 @@ export default function PhotosScreen() {
 
   const freeable = (scans ?? []).filter((s) => s.localAssetId && !s.originalDeleted && (s.status === "done" || s.status === "skipped"));
 
-  const deleteOriginals = async (rows: typeof freeable) => {
+  const freeOriginals = async (rows: typeof freeable) => {
     if (rows.length === 0) return;
     setFreeing(true);
     try {
-      const perm = await MediaLibrary.requestPermissionsAsync(false, ["photo"]);
-      if (!perm.granted) throw new Error("Photo access is needed to delete originals.");
-      const ok = await MediaLibrary.deleteAssetsAsync(rows.map((r) => r.localAssetId!));
-      if (!ok) return;
-      await Promise.all(rows.map((r) => markDeleted({ screenshotId: r._id as Id<"screenshots"> })));
+      await deleteOriginals(
+        rows.map((r) => ({ screenshotId: r._id as Id<"screenshots">, localAssetId: r.localAssetId! })),
+        markDeleted,
+      );
     } catch (err) {
       Alert.alert("Couldn't delete", err instanceof Error ? err.message : String(err));
     } finally {
@@ -123,7 +123,7 @@ export default function PhotosScreen() {
             testID="btn-free-all"
             accessibilityRole="button"
             accessibilityLabel="Delete sorted originals to free space"
-            onPress={() => deleteOriginals(freeable)}
+            onPress={() => freeOriginals(freeable)}
             disabled={freeing}
           >
             <Text style={{ color: colors.keep, fontWeight: "800" }}>{freeing ? "Freeing…" : "Free up"}</Text>
@@ -185,7 +185,7 @@ export default function PhotosScreen() {
                   accessibilityRole="button"
                   accessibilityLabel="Delete original photo"
                   hitSlop={8}
-                  onPress={() => deleteOriginals([scan])}
+                  onPress={() => freeOriginals([scan])}
                 >
                   <Ionicons name="trash-outline" size={20} color={colors.muted} />
                 </Pressable>
