@@ -38,7 +38,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
   const markActed = useMutation(api.items.markActed);
 
   const doKeep = useCallback(
-    async (item: ActionableItem, message = "Kept") => {
+    async (item: ActionableItem, message = "Tucked ✓") => {
       await keep({ itemId: item._id });
       scheduleItemReminder(item).catch(() => {});
       notify(message, () => {
@@ -107,7 +107,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
             await doKeep(item, "Added to Saved › Recipes");
             return true;
           case "memory":
-            await doKeep(item, "Kept in Memories");
+            await doKeep(item, "Tucked in Memories");
             return true;
         }
       } catch (err) {

@@ -52,7 +52,7 @@ export default function SettingsScreen() {
     if (next) {
       const granted = await requestNotificationPermission();
       if (!granted) {
-        Alert.alert("Notifications are off", "Turn on notifications for Snapback in Settings to get the morning brief.");
+        Alert.alert("Notifications are off", "Turn on notifications for Tuckd in Settings to get the morning brief.");
         return;
       }
       const token = await getPushToken();
@@ -119,12 +119,12 @@ export default function SettingsScreen() {
         </Group>
 
         {AGENT_URL ? (
-          <Group title="Text Snapback">
+          <Group title="Text Tuckd">
             <Text style={{ color: colors.muted, fontSize: 14, lineHeight: 20 }}>
-              Send screenshots to the Snapback bot on Telegram and they land here, sorted. It can also text you the morning brief.
+              Send screenshots to the Tuckd bot on Telegram and they land here, sorted. It can also text you the morning brief.
             </Text>
             <Button
-              label="Text Snapback"
+              label="Text Tuckd"
               icon="chatbubble-ellipses-outline"
               variant="secondary"
               testID="btn-text-snapback"

@@ -71,20 +71,21 @@ export default function Onboarding() {
             </View>
             <Text style={[styles.title, { color: colors.text }]}>You have hundreds of screenshots. Let’s make them useful.</Text>
             <Text style={[styles.copy, { color: colors.muted }]}>
-              Snapback reads new screenshots and turns flyers, places, recipes and deadlines into one-tap actions.
+              Tuckd reads new screenshots and turns flyers, places, recipes and deadlines into one-tap actions.
             </Text>
+            <Text style={[styles.copy, { color: colors.accent, fontWeight: "700" }]}>Keep what matters, tuckd away.</Text>
           </>
         ) : step === 1 ? (
           <>
             <Hero icon="images" color={typeMeta.place.color} />
-            <Text style={[styles.title, { color: colors.text }]}>Let Snapback see your screenshots</Text>
+            <Text style={[styles.title, { color: colors.text }]}>Let Tuckd see your screenshots</Text>
             <Text style={[styles.copy, { color: colors.muted }]}>
               Only screenshots are read. Images are deleted after sorting unless you keep the card.
             </Text>
             {access === "limited" ? (
               <View style={[styles.note, { backgroundColor: colors.surface, borderColor: colors.border }]} testID="limited-access-note">
                 <Text style={[styles.noteText, { color: colors.text }]}>
-                  You gave access to selected photos only. Snapback can sort just those. Add your Screenshots album for the full experience.
+                  You gave access to selected photos only. Tuckd can sort just those. Add your Screenshots album for the full experience.
                 </Text>
                 <Button label="Select more photos" variant="secondary" onPress={() => presentLimitedPicker()} testID="btn-select-more" />
               </View>
@@ -92,7 +93,7 @@ export default function Onboarding() {
             {access === "denied" ? (
               <View style={[styles.note, { backgroundColor: colors.surface, borderColor: colors.border }]} testID="denied-access-note">
                 <Text style={[styles.noteText, { color: colors.text }]}>
-                  Photo access is off. Turn it on in Settings, or share a single screenshot to Snapback from the Photos share sheet.
+                  Photo access is off. Turn it on in Settings, or share a single screenshot to Tuckd from the Photos share sheet.
                 </Text>
                 <Button label="Open Settings" variant="secondary" icon="settings-outline" onPress={() => Linking.openSettings()} testID="btn-open-settings" />
               </View>

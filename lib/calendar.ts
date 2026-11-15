@@ -21,13 +21,13 @@ async function writableCalendarId() {
   const primary = writable.find((c) => c.isPrimary) ?? writable[0];
   if (primary) return primary.id;
   return await Calendar.createCalendarAsync({
-    title: "Snapback",
+    title: "Tuckd",
     color: "#7C3AED",
     entityType: Calendar.EntityTypes.EVENT,
     name: "snapback",
     ownerAccount: "personal",
     accessLevel: Calendar.CalendarAccessLevel.OWNER,
-    source: { isLocalAccount: true, name: "Snapback", type: "LOCAL" },
+    source: { isLocalAccount: true, name: "Tuckd", type: "LOCAL" },
   });
 }
 
@@ -44,7 +44,7 @@ export async function addToCalendar(item: EventLike) {
     startDate: new Date(item.startsAt),
     endDate: new Date(item.endsAt ?? item.startsAt + HOUR),
     location,
-    notes: `${item.summary}\n\nSaved with Snapback`,
+    notes: `${item.summary}\n\nSaved with Tuckd`,
     timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
 }

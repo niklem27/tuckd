@@ -24,14 +24,14 @@ test:
           step_description: Extract the title of the top card in the Inbox.
           variable_name: kept_title
         - type: instructions
-          step_description: Swipe the top card to the right to keep it.
+          step_description: Swipe the top card to the right to tuck it.
         - type: validation
-          step_description: A "Kept" toast is visible and the top card is no longer "{{kept_title}}".
+          step_description: A "Tucked" toast is visible and the top card is no longer "{{kept_title}}".
         - type: while
           condition: Is the top Inbox card something other than a Jazz Night event?
           body:
             - type: instructions
-              step_description: Tap the heart (Keep) button below the card.
+              step_description: Tap the heart (Tuck) button below the card.
         - type: instructions
           step_description: Tap "Add to calendar" on the Jazz Night card.
         - type: if
