@@ -35,6 +35,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
   const archive = useMutation(api.items.archive);
   const undo = useMutation(api.items.undo);
   const markDone = useMutation(api.items.markDone);
+  const markActed = useMutation(api.items.markActed);
 
   const doKeep = useCallback(
     async (item: ActionableItem, message = "Kept") => {
@@ -76,6 +77,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
             if (!item.location) throw new Error("No location found on this screenshot.");
             await Linking.openURL(mapsUrl(item.location));
             await doKeep(item, `Saved ${item.location.name} to Places`);
+            await markActed({ itemId: item._id });
             return true;
           }
           case "product": {
@@ -85,11 +87,13 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
                 `https://www.google.com/search?q=${encodeURIComponent(item.title)}`,
               );
             await doKeep(item, "Saved to Products");
+            await markActed({ itemId: item._id });
             return true;
           }
           case "todo": {
             await keep({ itemId: item._id });
             const at = await scheduleItemReminder(item);
+            if (at) await markActed({ itemId: item._id });
             notify(
               at ? `Reminder set for ${formatFullDate(at)} at ${formatTime(at)}` : "Saved to To-dos",
               () => {
@@ -112,7 +116,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
         return false;
       }
     },
-    [markDone, keep, undo, notify, doKeep],
+    [markDone, markActed, keep, undo, notify, doKeep],
   );
 
   return { keep: doKeep, archive: doArchive, act };

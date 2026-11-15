@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, TextInput, V
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EmptyState } from "@/components/EmptyState";
 import { ItemRow, ItemTile } from "@/components/ItemRow";
+import { WrappedCard } from "@/components/WrappedCard";
 import { api } from "@/convex/_generated/api";
 import { ITEM_TYPES, typeMeta, usePalette } from "@/lib/theme";
 
@@ -51,6 +52,7 @@ export default function SavedScreen() {
         <EmptyState icon="bookmark-outline" title="Nothing saved yet" body="Swipe right on a card in the Inbox to keep it here." testID="saved-empty" />
       ) : (
         <ScrollView contentContainerStyle={{ paddingBottom: 40 }} testID="saved-list">
+          <WrappedCard />
           {ITEM_TYPES.map((type) => {
             const group = saved.filter((i) => i.type === type);
             if (group.length === 0) return null;

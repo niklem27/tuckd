@@ -117,8 +117,8 @@ export default function InboxScreen() {
           ) : (status?.total ?? 0) > 0 ? (
             <EmptyState
               icon="checkmark-done"
-              title="All caught up"
-              body={`You cleared ${stats?.clearedThisWeek ?? 0} screenshot${stats?.clearedThisWeek === 1 ? "" : "s"} this week.`}
+              title={`All caught up — you cleared ${stats?.clearedThisWeek ?? 0} screenshot${stats?.clearedThisWeek === 1 ? "" : "s"}`}
+              body="New screenshots show up here as soon as they're sorted."
               testID="inbox-zero"
             >
               {isDemoMode ? <Button label="Load demo screenshots" variant="secondary" icon="images-outline" onPress={loadDemo} testID="btn-load-demo" /> : null}

@@ -77,6 +77,7 @@ export default defineSchema({
     state: itemState,
     createdAt: v.number(),
     triagedAt: v.optional(v.number()),
+    actedAt: v.optional(v.number()),
   })
     .index("by_user_state", ["userId", "state", "createdAt"])
     .index("by_user_starts", ["userId", "startsAt"])

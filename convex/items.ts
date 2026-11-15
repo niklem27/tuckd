@@ -208,6 +208,51 @@ export const markDone = mutation({
   args: { itemId: v.id("items") },
   handler: async (ctx, { itemId }) => {
     await setState(ctx, itemId, "done");
+    await ctx.db.patch(itemId, { actedAt: Date.now() });
+  },
+});
+
+export const markActed = mutation({
+  args: { itemId: v.id("items") },
+  handler: async (ctx, { itemId }) => {
+    const userId = await requireUser(ctx);
+    await ownedItem(ctx, userId, itemId);
+    await ctx.db.patch(itemId, { actedAt: Date.now() });
+  },
+});
+
+export const wrapped = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await currentUser(ctx);
+    if (!userId) return null;
+    const types = ["event", "place", "product", "recipe", "todo", "memory"] as const;
+    const byType = Object.fromEntries(types.map((t) => [t, { saved: 0, acted: 0 }])) as Record<
+      (typeof types)[number],
+      { saved: number; acted: number }
+    >;
+    for (const state of ["kept", "done"] as const) {
+      const rows = await ctx.db
+        .query("items")
+        .withIndex("by_user_state", (q) => q.eq("userId", userId).eq("state", state))
+        .collect();
+      for (const row of rows) {
+        byType[row.type].saved++;
+        if (row.actedAt !== undefined || row.state === "done") byType[row.type].acted++;
+      }
+    }
+    const shots = await ctx.db
+      .query("screenshots")
+      .withIndex("by_user_asset", (q) => q.eq("userId", userId))
+      .collect();
+    const rows = types.map((type) => ({ type, ...byType[type] })).filter((r) => r.saved > 0);
+    return {
+      screenshots: shots.filter((s) => s.status === "done" || s.status === "skipped").length,
+      saved: rows.reduce((n, r) => n + r.saved, 0),
+      acted: rows.reduce((n, r) => n + r.acted, 0),
+      top: [...rows].sort((a, b) => b.saved - a.saved)[0] ?? null,
+      rows,
+    };
   },
 });
 

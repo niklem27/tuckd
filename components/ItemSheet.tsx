@@ -82,6 +82,8 @@ export function ItemSheet({ itemId }: { itemId: Id<"items"> }) {
           {fields.map(([icon, label, value]) => (
             <Pressable
               key={label}
+              testID={`field-${label.toLowerCase()}`}
+              accessibilityLabel={`${label}: ${value}`}
               style={styles.field}
               disabled={label !== "Link" && label !== "Place"}
               onPress={() => {

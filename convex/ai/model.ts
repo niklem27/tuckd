@@ -1,7 +1,7 @@
 import OpenAI from "openai";
 import { NormalizedResult, parseModelText, SYSTEM_PROMPT, todayIn } from "./extraction";
 
-export const MODEL = process.env.OPENAI_VISION_MODEL ?? "gpt-6.1-terra";
+export const MODEL = process.env.OPENAI_VISION_MODEL ?? "gpt-4o-mini";
 
 export async function extractFromImage(
   apiKey: string,

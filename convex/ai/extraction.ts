@@ -18,7 +18,7 @@ JSON schema:
   "confidence": 0.92
 }
 
-Type guide: event = something happening at a specific time (flyers, tickets); place = a venue/restaurant to visit; product = something to buy; recipe = food to cook; todo = a task or deadline to act on (job applications, bills, forms); memory = anything kept for fun or reference. Use null for unknown fields. Always include a UTC offset in ISO datetimes.`;
+Type guide: event = something happening at a specific time (flyers, tickets); place = a venue/restaurant to visit; product = something to buy; recipe = food to cook; todo = a task or deadline to act on (job applications, bills, forms); memory = anything kept for fun or reference. The title must name the specific thing (the event, venue, product, dish, or job role), never a generic label like "Job Application Deadline". Use null for unknown fields. price is a string such as "$129". Always include a UTC offset in ISO datetimes.`;
 
 const nullish = <T extends z.ZodTypeAny>(s: T) => s.nullish().transform((x) => x ?? undefined);
 
@@ -36,7 +36,7 @@ export const extractionSchema = z.union([
       z.object({ name: z.string(), address: nullish(z.string()) }),
     ),
     url: nullish(z.string()),
-    price: nullish(z.string()),
+    price: nullish(z.union([z.string(), z.number().transform((n) => `$${n}`)])),
     confidence: z.number().min(0).max(1).default(0.5),
   }),
 ]);
