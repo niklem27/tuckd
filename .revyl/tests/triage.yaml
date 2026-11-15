@@ -29,7 +29,7 @@ test:
         - type: instructions
           step_description: Swipe the top card to the left to archive it.
         - type: instructions
-          step_description: Tap "Undo" in the toast at the bottom of the screen.
+          step_description: Tap the "Undo" button next to the Inbox title.
         - type: validation
           step_description: The top card in the Inbox is titled "{{archived_title}}".
         - type: instructions
