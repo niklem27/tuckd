@@ -68,5 +68,26 @@
   {
     "file": "bank-balance.png",
     "sensitive": true
+  },
+  {
+    "file": "camera-dog.jpg",
+    "autoScan": true,
+    "sensitive": true,
+    "reason": "irrelevant"
+  },
+  {
+    "file": "camera-poster.jpg",
+    "autoScan": true,
+    "sensitive": false,
+    "type": "event",
+    "titleIncludes": [
+      "midnight loops"
+    ],
+    "startsAtLocal": {
+      "date": "2026-11-21",
+      "hour": 21
+    },
+    "locationIncludes": "chapel",
+    "priceIncludes": "18"
   }
 ]

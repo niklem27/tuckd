@@ -70,6 +70,49 @@ export const syncStatus = query({
   },
 });
 
+export const photoScans = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await requireUser(ctx).catch(() => null);
+    if (!userId) return { rows: [], ignored: 0 };
+    const shots = await ctx.db
+      .query("screenshots")
+      .withIndex("by_user_asset", (q) => q.eq("userId", userId).gte("assetId", "photo:").lt("assetId", "photo;"))
+      .collect();
+    const visible = shots.filter((s) => s.skipReason !== "irrelevant").sort((a, b) => b.takenAt - a.takenAt);
+    const ignored = shots.length - visible.length;
+    const rows = await Promise.all(
+      visible.slice(0, 50).map(async (shot) => {
+        const item = await ctx.db
+          .query("items")
+          .withIndex("by_screenshot", (q) => q.eq("screenshotId", shot._id))
+          .first();
+        const thumbUrl = shot.thumbStorageId ? await ctx.storage.getUrl(shot.thumbStorageId) : null;
+        return {
+          _id: shot._id,
+          localAssetId: /^photo:(auto:)?(ph:|file:)/.test(shot.assetId) ? null : shot.assetId.replace(/^photo:(auto:)?/, ""),
+          auto: shot.assetId.startsWith("photo:auto:"),
+          status: shot.status,
+          bytes: shot.bytes ?? 0,
+          originalDeleted: shot.originalDeleted ?? false,
+          thumbUrl,
+          item: item ? { _id: item._id, type: item.type, title: item.title, state: item.state } : null,
+        };
+      }),
+    );
+    return { rows, ignored };
+  },
+});
+
+export const markOriginalDeleted = mutation({
+  args: { screenshotId: v.id("screenshots"), bytes: v.optional(v.number()) },
+  handler: async (ctx, { screenshotId, bytes }) => {
+    const userId = await requireUser(ctx);
+    await ownedScreenshot(ctx, userId, screenshotId);
+    await ctx.db.patch(screenshotId, { originalDeleted: true, ...(bytes ? { originalBytes: bytes } : {}) });
+  },
+});
+
 export const retryFailed = mutation({
   args: {},
   handler: async (ctx) => {

@@ -8,6 +8,8 @@ config({ path: ".env.local" });
 
 type Expected = {
   file: string;
+  autoScan?: boolean;
+  reason?: "sensitive" | "irrelevant";
   sensitive: boolean;
   type?: string;
   titleIncludes?: string[];
@@ -26,7 +28,7 @@ const localHour = (ms: number) =>
 function check(exp: Expected, got: NormalizedResult): string[] {
   const problems: string[] = [];
   if (got.sensitive !== exp.sensitive) return [`sensitive=${got.sensitive}, expected ${exp.sensitive}`];
-  if (got.sensitive) return problems;
+  if (got.sensitive) return exp.reason && got.reason !== exp.reason ? [`reason=${got.reason}, expected ${exp.reason}`] : problems;
   if (exp.type && got.type !== exp.type) problems.push(`type=${got.type}, expected ${exp.type}`);
   if (exp.titleIncludes && !exp.titleIncludes.some((w) => got.title.toLowerCase().includes(w)))
     problems.push(`title "${got.title}" missing any of ${exp.titleIncludes.join("/")}`);
@@ -65,7 +67,8 @@ async function main() {
     expected.map(async (exp) => {
       try {
         const data = readFileSync(join(dir, exp.file)).toString("base64");
-        const got = await extractFromImage(apiKey, data, "image/png", TZ);
+        const mime = exp.file.endsWith(".jpg") ? "image/jpeg" : "image/png";
+        const got = await extractFromImage(apiKey, data, mime, TZ, exp.autoScan);
         return { exp, got, problems: check(exp, got) };
       } catch (err) {
         return { exp, got: null, problems: [err instanceof Error ? err.message : String(err)] };
@@ -76,7 +79,7 @@ async function main() {
   for (const { exp, got, problems } of results) {
     const ok = problems.length === 0;
     if (ok) passed++;
-    const summary = got ? (got.sensitive ? "sensitive" : `${got.type}: ${got.title}`) : "error";
+    const summary = got ? (got.sensitive ? got.reason : `${got.type}: ${got.title}`) : "error";
     console.log(`${ok ? "PASS" : "FAIL"}  ${exp.file.padEnd(24)} ${summary}`);
     for (const p of problems) console.log(`      - ${p}`);
   }

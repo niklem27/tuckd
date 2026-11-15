@@ -8,6 +8,7 @@ export async function extractFromImage(
   base64: string,
   mediaType: string,
   timezone: string,
+  autoScan = false,
 ): Promise<NormalizedResult> {
   const client = new OpenAI({ apiKey });
   const response = await client.chat.completions.create({
@@ -15,12 +16,12 @@ export async function extractFromImage(
     max_completion_tokens: 2000,
     response_format: { type: "json_object" },
     messages: [
-      { role: "system", content: SYSTEM_PROMPT(todayIn(timezone), timezone) },
+      { role: "system", content: SYSTEM_PROMPT(todayIn(timezone), timezone, autoScan) },
       {
         role: "user",
         content: [
           { type: "image_url", image_url: { url: `data:${mediaType};base64,${base64}` } },
-          { type: "text", text: "Analyze this screenshot and return the JSON." },
+          { type: "text", text: autoScan ? "Analyze this camera-roll photo and return the JSON." : "Analyze this screenshot and return the JSON." },
         ],
       },
     ],

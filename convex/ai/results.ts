@@ -16,7 +16,7 @@ export const startProcessing = internalMutation({
       .query("profiles")
       .withIndex("by_user", (q) => q.eq("userId", shot.userId))
       .unique();
-    return { storageId: shot.storageId, attempts, timezone: profile?.timezone ?? "America/Los_Angeles" };
+    return { storageId: shot.storageId, attempts, autoScan: shot.assetId.startsWith("photo:auto:"), timezone: profile?.timezone ?? "America/Los_Angeles" };
   },
 });
 
@@ -24,7 +24,7 @@ export const saveResult = internalMutation({
   args: {
     screenshotId: v.id("screenshots"),
     result: v.union(
-      v.object({ sensitive: v.literal(true) }),
+      v.object({ sensitive: v.literal(true), reason: v.union(v.literal("sensitive"), v.literal("irrelevant")) }),
       v.object({
         sensitive: v.literal(false),
         type: itemType,
@@ -48,6 +48,7 @@ export const saveResult = internalMutation({
       await deleteStorage(ctx, shot.thumbStorageId);
       await ctx.db.patch(screenshotId, {
         status: "skipped",
+        skipReason: result.reason,
         storageId: undefined,
         thumbStorageId: undefined,
         error: undefined,

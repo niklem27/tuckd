@@ -16,7 +16,8 @@
         "NSCalendarsFullAccessUsageDescription": "Snapback adds events from your screenshots to your calendar.",
         "NSCalendarsUsageDescription": "Snapback adds events from your screenshots to your calendar.",
         "NSLocationWhenInUseUsageDescription": "Snapback tells you when you're near a place you saved.",
-        "ITSAppUsesNonExemptEncryption": false
+        "ITSAppUsesNonExemptEncryption": false,
+        "NSCameraUsageDescription": "Snap posters and flyers so Snapback can turn them into actions."
       }
     },
     "android": {
@@ -35,7 +36,8 @@
         "WRITE_CALENDAR",
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
-        "POST_NOTIFICATIONS"
+        "POST_NOTIFICATIONS",
+        "CAMERA"
       ]
     },
     "web": {
@@ -86,7 +88,14 @@
       "expo-image",
       "expo-font",
       "expo-web-browser",
-      "expo-sharing"
+      "expo-sharing",
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Snapback reads the photos you pick to turn them into actionable cards.",
+          "cameraPermission": "Snap posters and flyers so Snapback can turn them into actions."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true,
