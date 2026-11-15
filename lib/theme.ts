@@ -11,7 +11,7 @@ export const typeMeta: Record<
   product: { label: "Product", plural: "Products", color: "#2563EB", icon: "pricetag", action: "Open link", actionIcon: "open-outline" },
   recipe: { label: "Recipe", plural: "Recipes", color: "#16A34A", icon: "restaurant", action: "Save recipe", actionIcon: "bookmark-outline" },
   todo: { label: "To-do", plural: "To-dos", color: "#DC2626", icon: "checkbox", action: "Set reminder", actionIcon: "alarm-outline" },
-  memory: { label: "Memory", plural: "Memories", color: "#6B7280", icon: "sparkles", action: "Keep", actionIcon: "heart-outline" },
+  memory: { label: "Memory", plural: "Memories", color: "#6B7280", icon: "sparkles", action: "Tuck", actionIcon: "heart-outline" },
 };
 
 export const ITEM_TYPES = Object.keys(typeMeta) as ItemType[];

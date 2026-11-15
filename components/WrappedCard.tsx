@@ -59,7 +59,7 @@ export function WrappedCard() {
           ))}
         </View>
         <Text style={styles.footer}>
-          {wrapped.screenshots} screenshots sorted with Snapback
+          {wrapped.screenshots} screenshots tucked with Tuckd
         </Text>
       </View>
       <Pressable

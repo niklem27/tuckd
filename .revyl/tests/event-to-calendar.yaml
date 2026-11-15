@@ -25,7 +25,7 @@ test:
           condition: Is the top Inbox card something other than a Jazz Night event?
           body:
             - type: instructions
-              step_description: Tap the heart (Keep) button below the card.
+              step_description: Tap the heart (Tuck) button below the card.
         - type: validation
           step_description: The top card is an Event card about Jazz Night.
         - type: instructions

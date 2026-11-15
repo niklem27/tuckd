@@ -33,7 +33,7 @@ export default function PhotosScreen() {
     if (next) {
       const perm = await MediaLibrary.requestPermissionsAsync(false, ["photo"]);
       if (!perm.granted) {
-        Alert.alert("Photo access is off", "Turn on photo access in Settings so Snapback can scan new photos.");
+        Alert.alert("Photo access is off", "Turn on photo access in Settings so Tuckd can scan new photos.");
         return;
       }
     }
@@ -85,7 +85,7 @@ export default function PhotosScreen() {
     <SafeAreaView edges={["top"]} style={[styles.screen, { backgroundColor: colors.background }]}>
       <Text style={[styles.h1, { color: colors.text }]}>Photos</Text>
       <Text style={[styles.sub, { color: colors.muted }]}>
-        Snap or pick photos of posters, flyers, menus and signs. Snapback reads them, then you can delete the originals to free space.
+        Snap or pick photos of posters, flyers, menus and signs. Tuckd reads them, then you can delete the originals to free space.
       </Text>
       <View style={styles.actions}>
         <Button label="Snap a photo" icon="camera-outline" onPress={() => pick("camera")} testID="btn-snap-photo" style={{ flex: 1 }} />
@@ -110,7 +110,7 @@ export default function PhotosScreen() {
       </View>
       {(data?.ignored ?? 0) > 0 ? (
         <Text style={[styles.freed, { color: colors.muted }]} testID="ignored-note">
-          {data!.ignored} ordinary photo{data!.ignored === 1 ? "" : "s"} ignored and deleted from Snapback.
+          {data!.ignored} ordinary photo{data!.ignored === 1 ? "" : "s"} ignored and deleted from Tuckd.
         </Text>
       ) : null}
       {freeable.length > 0 ? (
@@ -131,7 +131,7 @@ export default function PhotosScreen() {
         </View>
       ) : freedCount > 0 ? (
         <Text style={[styles.freed, { color: colors.muted }]} testID="freed-note">
-          {freedCount} original{freedCount === 1 ? "" : "s"} deleted from your phone. Snapback keeps the card.
+          {freedCount} original{freedCount === 1 ? "" : "s"} deleted from your phone. Tuckd keeps the card.
         </Text>
       ) : null}
       {scans === undefined ? (

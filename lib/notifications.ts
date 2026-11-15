@@ -19,7 +19,7 @@ Notifications.setNotificationHandler({
 export async function requestNotificationPermission() {
   if (Platform.OS === "android") {
     await Notifications.setNotificationChannelAsync("default", {
-      name: "Snapback",
+      name: "Tuckd",
       importance: AndroidImportance.DEFAULT,
     });
   }
