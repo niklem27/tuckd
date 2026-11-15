@@ -74,14 +74,15 @@ export const photoScans = query({
   args: {},
   handler: async (ctx) => {
     const userId = await requireUser(ctx).catch(() => null);
-    if (!userId) return [];
+    if (!userId) return { rows: [], ignored: 0 };
     const shots = await ctx.db
       .query("screenshots")
       .withIndex("by_user_asset", (q) => q.eq("userId", userId).gte("assetId", "photo:").lt("assetId", "photo;"))
       .collect();
-    shots.sort((a, b) => b.takenAt - a.takenAt);
-    return await Promise.all(
-      shots.slice(0, 50).map(async (shot) => {
+    const visible = shots.filter((s) => s.skipReason !== "irrelevant").sort((a, b) => b.takenAt - a.takenAt);
+    const ignored = shots.length - visible.length;
+    const rows = await Promise.all(
+      visible.slice(0, 50).map(async (shot) => {
         const item = await ctx.db
           .query("items")
           .withIndex("by_screenshot", (q) => q.eq("screenshotId", shot._id))
@@ -89,7 +90,8 @@ export const photoScans = query({
         const thumbUrl = shot.thumbStorageId ? await ctx.storage.getUrl(shot.thumbStorageId) : null;
         return {
           _id: shot._id,
-          localAssetId: shot.assetId.startsWith("photo:ph://") || shot.assetId.startsWith("photo:file:") ? null : shot.assetId.slice(6),
+          localAssetId: /^photo:(auto:)?(ph:|file:)/.test(shot.assetId) ? null : shot.assetId.replace(/^photo:(auto:)?/, ""),
+          auto: shot.assetId.startsWith("photo:auto:"),
           status: shot.status,
           bytes: shot.bytes ?? 0,
           originalDeleted: shot.originalDeleted ?? false,
@@ -98,6 +100,7 @@ export const photoScans = query({
         };
       }),
     );
+    return { rows, ignored };
   },
 });
 

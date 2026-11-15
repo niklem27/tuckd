@@ -21,6 +21,8 @@ export const upsert = mutation({
     briefEnabled: v.optional(v.boolean()),
     onboarded: v.optional(v.boolean()),
     lastSyncedAt: v.optional(v.number()),
+    autoScanPhotos: v.optional(v.boolean()),
+    lastPhotoSyncAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {
     const userId = await requireUser(ctx);

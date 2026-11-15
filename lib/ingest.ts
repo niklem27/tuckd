@@ -76,6 +76,20 @@ export async function presentLimitedPicker() {
   await MediaLibrary.presentPermissionsPickerAsync(["photo"]);
 }
 
+const AUTO_PHOTO_LIMIT = 25;
+
+async function findCameraPhotos(since: number): Promise<MediaLibrary.Asset[]> {
+  const page = await MediaLibrary.getAssetsAsync({
+    mediaType: MediaLibrary.MediaType.photo,
+    createdAfter: since,
+    first: AUTO_PHOTO_LIMIT * 2,
+    sortBy: [[MediaLibrary.SortBy.creationTime, false]] as MediaLibrary.SortByValue[],
+  });
+  return page.assets
+    .filter((a) => !a.mediaSubtypes?.includes("screenshot") && !/screenshot/i.test(a.filename) && !/\/Screenshots\//i.test(a.uri))
+    .slice(0, AUTO_PHOTO_LIMIT);
+}
+
 async function findScreenshots(since: number): Promise<MediaLibrary.Asset[]> {
   const base = {
     mediaType: MediaLibrary.MediaType.photo,
@@ -147,20 +161,23 @@ export function useIngest() {
     if (access !== "all" && access !== "limited") return 0;
     const startedAt = Date.now();
     const lastSyncedAt = me?.profile?.lastSyncedAt;
+    const autoScan = me?.profile?.autoScanPhotos ?? false;
+    const lastPhotoSyncAt = me?.profile?.lastPhotoSyncAt ?? startedAt;
     const count = await importSources(async () => {
-      const assets = await findScreenshots(lastSyncedAt ?? startedAt - FIRST_RUN_WINDOW);
+      const shots = await findScreenshots(lastSyncedAt ?? startedAt - FIRST_RUN_WINDOW);
+      const photos = autoScan ? await findCameraPhotos(lastPhotoSyncAt) : [];
       const sources: Source[] = [];
-      for (const asset of assets) {
+      for (const [asset, prefix] of [...shots.map((a) => [a, ""] as const), ...photos.map((a) => [a, "photo:auto:"] as const)]) {
         const info = await MediaLibrary.getAssetInfoAsync(asset);
         const uri = info.localUri ?? asset.uri;
         if (!uri) continue;
-        sources.push({ assetId: asset.id, takenAt: asset.creationTime, uri, width: asset.width, height: asset.height });
+        sources.push({ assetId: prefix + asset.id, takenAt: asset.creationTime, uri, width: asset.width, height: asset.height });
       }
       return sources;
     });
-    await upsertProfile({ lastSyncedAt: startedAt });
+    await upsertProfile({ lastSyncedAt: startedAt, ...(autoScan ? { lastPhotoSyncAt: startedAt } : {}) });
     return count;
-  }, [importSources, me?.profile?.lastSyncedAt, upsertProfile]);
+  }, [importSources, me?.profile?.lastSyncedAt, me?.profile?.autoScanPhotos, me?.profile?.lastPhotoSyncAt, upsertProfile]);
 
   const loadDemo = useCallback(async () => {
     const now = Date.now();

@@ -1,6 +1,10 @@
 import { z } from "zod";
 
-export const SYSTEM_PROMPT = (today: string, tz: string) =>
+const AUTO_SCAN_RULE = `
+
+This photo was picked up automatically from the camera roll, not chosen by the user. Unless it clearly shows something the user would want to act on later (a poster, flyer, menu, sign, label, ticket, schedule, whiteboard, business card, or product with readable details), return {"irrelevant": true}. Ordinary photos of people, pets, food on a plate, scenery, or selfies are irrelevant.`;
+
+export const SYSTEM_PROMPT = (today: string, tz: string, autoScan = false) =>
   `You analyze a phone screenshot, or a photo the user took of something like a poster, flyer, menu, sign or label, and decide what the user intended to save it for. Return ONLY JSON matching the schema. Today's date is ${today} and the user's timezone is ${tz}; resolve relative dates ("this Friday", "tonight") to ISO 8601. If the screenshot shows banking/financial balances, passwords, 2FA/OTP codes, IDs, medical records, or private intimate conversations, return {"sensitive": true}. Choose the single most useful type. Keep the title ≤ 6 words and the summary ≤ 15 words.
 
 JSON schema:
@@ -18,7 +22,7 @@ JSON schema:
   "confidence": 0.92
 }
 
-Type guide: event = something happening at a specific time (flyers, tickets); place = a venue/restaurant to visit; product = something to buy; recipe = food to cook; todo = a task or deadline to act on (job applications, bills, forms); memory = anything kept for fun or reference. The title must name the specific thing (the event, venue, product, dish, or job role), never a generic label like "Job Application Deadline". Use null for unknown fields. price is a string such as "$129". Always include a UTC offset in ISO datetimes.`;
+Type guide: event = something happening at a specific time (flyers, tickets); place = a venue/restaurant to visit; product = something to buy; recipe = food to cook; todo = a task or deadline to act on (job applications, bills, forms); memory = anything kept for fun or reference. The title must name the specific thing (the event, venue, product, dish, or job role), never a generic label like "Job Application Deadline". Use null for unknown fields. price is a string such as "$129". Always include a UTC offset in ISO datetimes.${autoScan ? AUTO_SCAN_RULE : ""}`;
 
 const nullish = <T extends z.ZodTypeAny>(s: T) => s.nullish().transform((x) => x ?? undefined);
 
@@ -44,7 +48,7 @@ export const extractionSchema = z.union([
 export type Extraction = z.infer<typeof extractionSchema>;
 
 export type NormalizedResult =
-  | { sensitive: true }
+  | { sensitive: true; reason: "sensitive" | "irrelevant" }
   | {
       sensitive: false;
       type: "event" | "place" | "product" | "recipe" | "todo" | "memory";
@@ -71,8 +75,10 @@ export function parseModelText(text: string): NormalizedResult {
   const start = text.indexOf("{");
   const end = text.lastIndexOf("}");
   if (start === -1 || end === -1) throw new Error("Model returned no JSON");
-  const parsed = extractionSchema.parse(JSON.parse(text.slice(start, end + 1)));
-  if (parsed.sensitive === true) return { sensitive: true };
+  const raw = JSON.parse(text.slice(start, end + 1));
+  if (raw?.irrelevant === true) return { sensitive: true, reason: "irrelevant" };
+  const parsed = extractionSchema.parse(raw);
+  if (parsed.sensitive === true) return { sensitive: true, reason: "sensitive" };
   const type = parsed.confidence < 0.4 ? "memory" : parsed.type;
   const deadline = toMs(parsed.deadline);
   const startsAt = toMs(parsed.startsAt) ?? (type === "todo" ? deadline : undefined);

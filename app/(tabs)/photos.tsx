@@ -5,7 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library/legacy";
 import { router } from "expo-router";
 import { useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Text, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
@@ -20,9 +20,25 @@ const MAX_PICK = 10;
 export default function PhotosScreen() {
   const { colors } = usePalette();
   const { isAuthenticated } = useConvexAuth();
-  const scans = useQuery(api.screenshots.photoScans, isAuthenticated ? {} : "skip");
+  const data = useQuery(api.screenshots.photoScans, isAuthenticated ? {} : "skip");
+  const scans = data?.rows;
+  const me = useQuery(api.profile.me, isAuthenticated ? {} : "skip");
+  const upsert = useMutation(api.profile.upsert);
+  const autoScan = me?.profile?.autoScanPhotos ?? false;
   const markDeleted = useMutation(api.screenshots.markOriginalDeleted);
-  const { scanPhotos, uploading } = useIngestContext();
+  const { scanPhotos, sync, uploading } = useIngestContext();
+
+  const toggleAutoScan = async (next: boolean) => {
+    if (next) {
+      const perm = await MediaLibrary.requestPermissionsAsync(false, ["photo"]);
+      if (!perm.granted) {
+        Alert.alert("Photo access is off", "Turn on photo access in Settings so Snapback can scan new photos.");
+        return;
+      }
+    }
+    await upsert({ autoScanPhotos: next, ...(next ? { lastPhotoSyncAt: Date.now() - 3 * 24 * 60 * 60 * 1000 } : {}) });
+    if (next) setTimeout(() => sync().catch(() => {}), 300);
+  };
   const [freeing, setFreeing] = useState(false);
 
   const pick = async (source: "library" | "camera") => {
@@ -83,6 +99,20 @@ export default function PhotosScreen() {
           style={{ flex: 1 }}
         />
       </View>
+      <View style={[styles.autoRow, { backgroundColor: colors.surface, borderColor: colors.border }]}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ color: colors.text, fontSize: 16, fontWeight: "700" }}>Auto-scan new photos</Text>
+          <Text style={{ color: colors.muted, fontSize: 13, lineHeight: 18 }}>
+            Finds posters, flyers and menus in your camera roll. Ordinary photos are ignored and deleted from our servers right away.
+          </Text>
+        </View>
+        <Switch testID="toggle-auto-scan" accessibilityLabel="Auto-scan new photos" value={autoScan} onValueChange={toggleAutoScan} trackColor={{ true: colors.accent }} />
+      </View>
+      {(data?.ignored ?? 0) > 0 ? (
+        <Text style={[styles.freed, { color: colors.muted }]} testID="ignored-note">
+          {data!.ignored} ordinary photo{data!.ignored === 1 ? "" : "s"} ignored and deleted from Snapback.
+        </Text>
+      ) : null}
       {freeable.length > 0 ? (
         <View style={[styles.freeBar, { backgroundColor: colors.keep + "18", borderColor: colors.keep + "40" }]} testID="free-space-bar">
           <Ionicons name="leaf-outline" size={18} color={colors.keep} />
@@ -143,7 +173,9 @@ export default function PhotosScreen() {
                       ? "Skipped: looked private"
                       : scan.status === "failed"
                         ? "Couldn't read this one"
-                        : "Reading…"}
+                        : scan.auto
+                          ? "Found in camera roll, reading…"
+                          : "Reading…"}
                   </Text>
                 )}
               </View>
@@ -173,6 +205,7 @@ const styles = StyleSheet.create({
   actions: { flexDirection: "row", gap: 10, padding: 20 },
   freeBar: { flexDirection: "row", alignItems: "center", gap: 10, marginHorizontal: 20, marginBottom: 12, padding: 12, borderRadius: 14, borderWidth: 1 },
   freeText: { flex: 1, fontSize: 14, fontWeight: "600" },
+  autoRow: { flexDirection: "row", alignItems: "center", gap: 12, marginHorizontal: 20, marginBottom: 12, padding: 14, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth },
   freed: { marginHorizontal: 20, marginBottom: 12, fontSize: 14 },
   row: { flexDirection: "row", alignItems: "center", gap: 12, padding: 12, marginHorizontal: 20, marginBottom: 10, borderRadius: 16, borderWidth: StyleSheet.hairlineWidth },
   thumb: { width: 56, height: 72, borderRadius: 10, overflow: "hidden" },

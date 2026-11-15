@@ -19,7 +19,7 @@ export const processScreenshot = internalAction({
       if (!apiKey) throw new Error("OPENAI_API_KEY is not set on the Convex deployment");
       const data = Buffer.from(await blob.arrayBuffer()).toString("base64");
       const mediaType = blob.type === "image/png" ? "image/png" : "image/jpeg";
-      const result = await extractFromImage(apiKey, data, mediaType, job.timezone);
+      const result = await extractFromImage(apiKey, data, mediaType, job.timezone, job.autoScan);
       await ctx.runMutation(internal.ai.results.saveResult, { screenshotId, result });
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);

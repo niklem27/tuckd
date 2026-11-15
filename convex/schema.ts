@@ -45,6 +45,8 @@ export default defineSchema({
     onboarded: v.optional(v.boolean()),
     lastBriefDate: v.optional(v.string()),
     linkCode: v.optional(v.string()),
+    autoScanPhotos: v.optional(v.boolean()),
+    lastPhotoSyncAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])
     .index("by_link_code", ["linkCode"]),
@@ -60,6 +62,7 @@ export default defineSchema({
     error: v.optional(v.string()),
     bytes: v.optional(v.number()),
     originalDeleted: v.optional(v.boolean()),
+    skipReason: v.optional(v.union(v.literal("sensitive"), v.literal("irrelevant"))),
     originalBytes: v.optional(v.number()),
   })
     .index("by_user_asset", ["userId", "assetId"])
