@@ -67,7 +67,7 @@ export default function SettingsScreen() {
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={[styles.h1, { color: colors.text }]}>Settings</Text>
 
-        <View style={[styles.stats, { backgroundColor: colors.accent }]} testID="stats-card">
+        <View style={[styles.stats, { backgroundColor: colors.text }]} testID="stats-card">
           <Stat label="Screenshots sorted" value={String(stats?.sorted ?? 0)} />
           <Stat label="Space you could free" value={formatBytes(stats?.estimatedFreeableBytes ?? 0)} />
           <Stat label="Cleared this week" value={String(stats?.clearedThisWeek ?? 0)} />
@@ -212,10 +212,11 @@ export default function SettingsScreen() {
 }
 
 function Stat({ label, value }: { label: string; value: string }) {
+  const { colors } = usePalette();
   return (
     <View style={{ flex: 1, gap: 2 }}>
-      <Text style={{ color: "#fff", fontSize: 24, fontWeight: "800" }}>{value}</Text>
-      <Text style={{ color: "#ffffffCC", fontSize: 12, fontWeight: "600" }}>{label}</Text>
+      <Text style={{ color: colors.background, fontSize: 24, fontWeight: "800" }}>{value}</Text>
+      <Text style={{ color: colors.background + "CC", fontSize: 12, fontWeight: "600" }}>{label}</Text>
     </View>
   );
 }
@@ -234,9 +235,9 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   content: { padding: 20, gap: 22, paddingBottom: 60 },
   h1: { fontSize: 34, fontWeight: "800", letterSpacing: -0.8 },
-  stats: { flexDirection: "row", gap: 10, padding: 18, borderRadius: 20 },
+  stats: { flexDirection: "row", gap: 10, padding: 18, borderRadius: 16 },
   groupTitle: { fontSize: 13, fontWeight: "800", textTransform: "uppercase", letterSpacing: 0.8 },
-  group: { padding: 14, gap: 10, borderRadius: 20, borderWidth: StyleSheet.hairlineWidth },
+  group: { padding: 14, gap: 10, borderRadius: 16, borderWidth: 1 },
   toggleRow: { flexDirection: "row", alignItems: "center", gap: 12 },
   rowTitle: { fontSize: 16, fontWeight: "700" },
 });

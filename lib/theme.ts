@@ -6,39 +6,58 @@ export const typeMeta: Record<
   ItemType,
   { label: string; plural: string; color: string; icon: string; action: string; actionIcon: string }
 > = {
-  event: { label: "Event", plural: "Events", color: "#7C3AED", icon: "calendar", action: "Add to calendar", actionIcon: "calendar-outline" },
-  place: { label: "Place", plural: "Places", color: "#F97316", icon: "location", action: "Open in Maps", actionIcon: "map-outline" },
-  product: { label: "Product", plural: "Products", color: "#2563EB", icon: "pricetag", action: "Open link", actionIcon: "open-outline" },
-  recipe: { label: "Recipe", plural: "Recipes", color: "#16A34A", icon: "restaurant", action: "Save recipe", actionIcon: "bookmark-outline" },
-  todo: { label: "To-do", plural: "To-dos", color: "#DC2626", icon: "checkbox", action: "Set reminder", actionIcon: "alarm-outline" },
-  memory: { label: "Memory", plural: "Memories", color: "#6B7280", icon: "sparkles", action: "Tuck", actionIcon: "heart-outline" },
+  event: { label: "Event", plural: "Events", color: "#7C6AE6", icon: "calendar", action: "Add to calendar", actionIcon: "calendar-outline" },
+  place: { label: "Place", plural: "Places", color: "#E9A23B", icon: "location", action: "Open in Maps", actionIcon: "map-outline" },
+  product: { label: "Product", plural: "Products", color: "#3F8CE8", icon: "pricetag", action: "Open link", actionIcon: "open-outline" },
+  recipe: { label: "Recipe", plural: "Recipes", color: "#3FA66B", icon: "restaurant", action: "Save recipe", actionIcon: "bookmark-outline" },
+  todo: { label: "To-do", plural: "To-dos", color: "#D9507A", icon: "checkbox", action: "Set reminder", actionIcon: "alarm-outline" },
+  memory: { label: "Memory", plural: "Memories", color: "#A39E94", icon: "sparkles", action: "Tuck", actionIcon: "heart-outline" },
 };
 
 export const ITEM_TYPES = Object.keys(typeMeta) as ItemType[];
 
+function mix(hex: string, target: number, amount: number) {
+  const n = parseInt(hex.slice(1), 16);
+  const channel = (shift: number) => Math.round(((n >> shift) & 255) * (1 - amount) + target * amount);
+  return `#${((1 << 24) | (channel(16) << 16) | (channel(8) << 8) | channel(0)).toString(16).slice(1).toUpperCase()}`;
+}
+
+export function chipColors(type: ItemType, dark: boolean) {
+  const color = typeMeta[type].color;
+  return { background: color + "1F", text: dark ? mix(color, 255, 0.45) : mix(color, 0, 0.5) };
+}
+
+const STONE = "#A39E94";
+
 const light = {
-  background: "#F7F7F9",
+  background: "#FBF6EE",
   surface: "#FFFFFF",
-  surfaceAlt: "#F0F0F4",
-  text: "#111114",
-  muted: "#6B6B76",
-  border: "#E6E6EC",
-  accent: "#7C3AED",
-  keep: "#16A34A",
-  archive: "#DC2626",
-  shadow: "#000000",
+  surfaceAlt: "#F3ECE1",
+  text: "#173A40",
+  muted: "#5E6B6D",
+  border: "#E9E1D4",
+  primary: "#C8553A",
+  onPrimary: "#FFFFFF",
+  accent: "#173A40",
+  keep: "#C8553A",
+  archive: STONE,
+  danger: "#B42318",
+  shadow: "#173A40",
 };
 
 const dark: typeof light = {
-  background: "#0B0B0F",
-  surface: "#17171D",
-  surfaceAlt: "#22222A",
-  text: "#F4F4F6",
-  muted: "#9B9BA6",
-  border: "#2A2A33",
-  accent: "#A78BFA",
-  keep: "#22C55E",
-  archive: "#F87171",
+  background: "#0F2427",
+  surface: "#183439",
+  surfaceAlt: "#1F3F45",
+  text: "#F3EEE6",
+  muted: "#A7B4B5",
+  border: "#24474D",
+  primary: "#EE8B6C",
+  onPrimary: "#0F2427",
+  accent: "#F3EEE6",
+  keep: "#EE8B6C",
+  archive: STONE,
+  danger: "#F97066",
   shadow: "#000000",
 };
 

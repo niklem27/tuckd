@@ -79,15 +79,15 @@ export function WrappedCard() {
 
 const styles = StyleSheet.create({
   wrap: { marginHorizontal: 20, marginTop: 14 },
-  card: { backgroundColor: "#1E1033", borderRadius: 20, padding: 20, gap: 12, overflow: "hidden" },
-  kicker: { color: "#C4B5FD", fontSize: 12, fontWeight: "800", letterSpacing: 1.5 },
+  card: { backgroundColor: "#173A40", borderRadius: 16, padding: 20, gap: 12, overflow: "hidden" },
+  kicker: { color: "#A7B4B5", fontSize: 12, fontWeight: "800", letterSpacing: 1.5 },
   headline: { color: "#fff", fontSize: 24, fontWeight: "800", letterSpacing: -0.4, lineHeight: 29 },
   rows: { gap: 8 },
   row: { flexDirection: "row", alignItems: "center", gap: 10 },
   dot: { width: 22, height: 22, borderRadius: 11, alignItems: "center", justifyContent: "center" },
   rowLabel: { color: "#fff", fontSize: 15, fontWeight: "700", flex: 1 },
-  rowValue: { color: "#DDD6FE", fontSize: 14, fontWeight: "600" },
-  footer: { color: "#A78BFA", fontSize: 12, fontWeight: "600", marginTop: 4 },
+  rowValue: { color: "#D9E2E2", fontSize: 14, fontWeight: "600" },
+  footer: { color: "#A7B4B5", fontSize: 12, fontWeight: "600", marginTop: 4 },
   share: { position: "absolute", top: 14, right: 14, flexDirection: "row", alignItems: "center", gap: 6, backgroundColor: "#ffffff26", paddingHorizontal: 12, paddingVertical: 7, borderRadius: 999 },
   shareText: { color: "#fff", fontWeight: "700", fontSize: 14 },
 });

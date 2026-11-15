@@ -114,8 +114,8 @@ export default function PhotosScreen() {
         </Text>
       ) : null}
       {freeable.length > 0 ? (
-        <View style={[styles.freeBar, { backgroundColor: colors.keep + "18", borderColor: colors.keep + "40" }]} testID="free-space-bar">
-          <Ionicons name="leaf-outline" size={18} color={colors.keep} />
+        <View style={[styles.freeBar, { backgroundColor: colors.accent + "10", borderColor: colors.border }]} testID="free-space-bar">
+          <Ionicons name="leaf-outline" size={18} color={colors.accent} />
           <Text style={[styles.freeText, { color: colors.text }]}>
             {freeable.length} sorted original{freeable.length === 1 ? "" : "s"} still on your phone
           </Text>
@@ -126,7 +126,7 @@ export default function PhotosScreen() {
             onPress={() => freeOriginals(freeable)}
             disabled={freeing}
           >
-            <Text style={{ color: colors.keep, fontWeight: "800" }}>{freeing ? "Freeing…" : "Free up"}</Text>
+            <Text style={{ color: colors.accent, fontWeight: "800" }}>{freeing ? "Freeing…" : "Free up"}</Text>
           </Pressable>
         </View>
       ) : freedCount > 0 ? (

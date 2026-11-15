@@ -12,7 +12,7 @@ export function Toast({ toast, onDismiss }: { toast: ToastState; onDismiss: () =
       <View
         testID="toast"
         accessibilityLiveRegion="polite"
-        style={[styles.toast, { backgroundColor: dark ? colors.surfaceAlt : "#1C1C22" }]}
+        style={[styles.toast, { backgroundColor: dark ? colors.surfaceAlt : colors.text, borderColor: dark ? colors.border : colors.text }]}
       >
         <Text style={styles.text} numberOfLines={2} testID="toast-message">
           {toast.message}
@@ -28,7 +28,7 @@ export function Toast({ toast, onDismiss }: { toast: ToastState; onDismiss: () =
               onDismiss();
             }}
           >
-            <Text style={[styles.undo, { color: colors.accent === "#7C3AED" ? "#C4B5FD" : colors.accent }]}>Undo</Text>
+            <Text style={[styles.undo, { color: dark ? colors.text : colors.background }]}>Undo</Text>
           </Pressable>
         ) : null}
       </View>
@@ -45,12 +45,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 14,
     borderRadius: 16,
-    shadowColor: "#000",
-    shadowOpacity: 0.25,
-    shadowRadius: 16,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 8,
+    borderWidth: 1,
   },
-  text: { flex: 1, color: "#fff", fontSize: 15, fontWeight: "600" },
-  undo: { fontSize: 15, fontWeight: "800" },
+  text: { flex: 1, color: "#FBF6EE", fontSize: 15, fontWeight: "600" },
+  undo: { fontSize: 15, fontWeight: "800", textDecorationLine: "underline" },
 });
