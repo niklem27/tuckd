@@ -44,7 +44,10 @@ export default defineSchema({
     briefEnabled: v.boolean(),
     onboarded: v.optional(v.boolean()),
     lastBriefDate: v.optional(v.string()),
-  }).index("by_user", ["userId"]),
+    linkCode: v.optional(v.string()),
+  })
+    .index("by_user", ["userId"])
+    .index("by_link_code", ["linkCode"]),
 
   screenshots: defineTable({
     userId: v.id("users"),
@@ -86,6 +89,11 @@ export default defineSchema({
       searchField: "searchText",
       filterFields: ["userId", "state"],
     }),
+
+  agentLinks: defineTable({
+    sender: v.string(),
+    userId: v.id("users"),
+  }).index("by_sender", ["sender"]),
 
   pushTokens: defineTable({
     userId: v.id("users"),

@@ -1,4 +1,5 @@
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import * as Linking from "expo-linking";
 import * as Notifications from "expo-notifications";
 import { ReactNode, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
@@ -9,6 +10,8 @@ import { api } from "@/convex/_generated/api";
 import { DAY, formatBytes, startOfDay } from "@/lib/format";
 import { getPushToken, previewMorningBrief, requestNotificationPermission } from "@/lib/notifications";
 import { isDemoMode, usePalette } from "@/lib/theme";
+
+const AGENT_URL = process.env.EXPO_PUBLIC_SNAPBACK_AGENT_URL;
 
 export default function SettingsScreen() {
   const { colors } = usePalette();
@@ -22,6 +25,7 @@ export default function SettingsScreen() {
   const savePushToken = useMutation(api.notifications.savePushToken);
   const deleteAll = useMutation(api.profile.deleteAllData);
   const retryFailed = useMutation(api.screenshots.retryFailed);
+  const linkCode = useMutation(api.agent.linkCode);
   const { sync, loadDemo, uploading } = useIngestContext();
   const [syncing, setSyncing] = useState(false);
   const briefEnabled = me?.profile?.briefEnabled ?? false;
@@ -70,6 +74,24 @@ export default function SettingsScreen() {
             <Button label="Load demo screenshots" icon="images-outline" variant="secondary" testID="btn-load-demo" loading={!!uploading} onPress={loadDemo} />
           ) : null}
         </Group>
+
+        {AGENT_URL ? (
+          <Group title="Text Snapback">
+            <Text style={{ color: colors.muted, fontSize: 14, lineHeight: 20 }}>
+              Send screenshots to the Snapback bot on Telegram and they land here, sorted. It can also text you the morning brief.
+            </Text>
+            <Button
+              label="Text Snapback"
+              icon="chatbubble-ellipses-outline"
+              variant="secondary"
+              testID="btn-text-snapback"
+              onPress={async () => {
+                const code = await linkCode();
+                await Linking.openURL(`${AGENT_URL}?start=${code}`);
+              }}
+            />
+          </Group>
+        ) : null}
 
         <Group title="Notifications">
           <View style={styles.toggleRow}>
