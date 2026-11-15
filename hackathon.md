@@ -11,7 +11,7 @@
 - **Auth:** Convex Auth
 - **AI models:** gpt-4o-mini
 - **Started:** 2026-11-15T18:33:27Z
-- **Last updated:** 2026-11-15T19:30:29Z
+- **Last updated:** 2026-11-15T21:05:00Z
 
 ## Log
 
@@ -29,3 +29,6 @@ Added a persistent Undo button for the last swipe next to the Inbox title, after
 
 ### 2026-11-15 - a867e1b
 Added the Screenshot Wrapped card at the top of Saved, computed by a Convex query that counts saved versus acted items per type, and shareable as an image. Acting on a place, product or to-do now records `actedAt`. Moved extraction to gpt-4o-mini, coerced numeric prices, and tightened the title rule; the fixture eval passes 8/8 (`convex/items.ts`, `components/WrappedCard.tsx`, `convex/ai/extraction.ts`).
+
+### 2026-11-15 - working tree
+Added a texting agent path. Convex HTTP actions take a screenshot from a chat sender (by URL or base64), store it, and run the same scheduled extraction as an in-app upload, then answer with a one-line result such as "Added Jazz Night at The Blue Room, Sun 8:00 PM ✓". A brief endpoint returns today's saved items as text, and a link endpoint ties a chat sender to an app account through a code from Settings › Text Snapback. The endpoints are guarded by a secret in the Convex environment. The agent itself runs on Keiki with these endpoints as webhook tools (`convex/http.ts`, `convex/agent.ts`, `app/(tabs)/settings.tsx`).

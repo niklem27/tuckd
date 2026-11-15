@@ -12,7 +12,36 @@ const json = (body: unknown, status = 200) =>
 
 function authorized(req: Request) {
   const secret = process.env.SNAPBACK_AGENT_SECRET;
-  return !!secret && req.headers.get("Authorization") === `Bearer ${secret}`;
+  if (!secret) return false;
+  return req.headers.get("Authorization") === `Bearer ${secret}` || new URL(req.url).searchParams.get("key") === secret;
+}
+
+type ToolCall = {
+  input?: Record<string, unknown>;
+  args?: Record<string, unknown>;
+  arguments?: Record<string, unknown>;
+  context?: { userId?: string; phone?: string; attachments?: { url?: string; mime_type?: string }[] };
+} & Record<string, unknown>;
+
+async function readToolCall(req: Request) {
+  const body = (await req.json()) as ToolCall;
+  const input = (body.input ?? body.args ?? body.arguments ?? body) as Record<string, unknown>;
+  const context = body.context ?? {};
+  const attachment = context.attachments?.find((a) => a.url);
+  const sender =
+    (input.sender as string | undefined) ??
+    context.userId ??
+    context.phone ??
+    req.headers.get("X-Orchid-User-Id") ??
+    undefined;
+  console.log("agent tool call", JSON.stringify({ keys: Object.keys(body), inputKeys: Object.keys(input), contextKeys: Object.keys(context), hasAttachment: !!attachment, hasSender: !!sender }));
+  return {
+    sender,
+    imageUrl: (input.image_url as string | undefined) ?? (input.imageUrl as string | undefined) ?? attachment?.url,
+    imageBase64: input.imageBase64 as string | undefined,
+    mimeType: (input.mimeType as string | undefined) ?? attachment?.mime_type,
+    code: (input.code as string | undefined) ?? (input.link_code as string | undefined),
+  };
 }
 
 const fmtWhen = (ms: number, tz: string) =>
@@ -34,7 +63,7 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, req) => {
     if (!authorized(req)) return json({ error: "unauthorized" }, 401);
-    const body = (await req.json()) as { sender?: string; imageUrl?: string; imageBase64?: string; mimeType?: string };
+    const body = await readToolCall(req);
     if (!body.sender || (!body.imageUrl && !body.imageBase64)) {
       return json({ error: "sender and imageUrl or imageBase64 are required" }, 400);
     }
@@ -91,7 +120,7 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, req) => {
     if (!authorized(req)) return json({ error: "unauthorized" }, 401);
-    const { sender } = (await req.json()) as { sender?: string };
+    const { sender } = await readToolCall(req);
     if (!sender) return json({ error: "sender is required" }, 400);
     const brief = await ctx.runQuery(internal.agent.briefItems, { sender, now: Date.now() });
     if (!brief) return json({ count: 0, text: "Send me a screenshot first and I'll start your Snapback." });
@@ -111,7 +140,7 @@ http.route({
   method: "POST",
   handler: httpAction(async (ctx, req) => {
     if (!authorized(req)) return json({ error: "unauthorized" }, 401);
-    const { sender, code } = (await req.json()) as { sender?: string; code?: string };
+    const { sender, code } = await readToolCall(req);
     if (!sender || !code) return json({ error: "sender and code are required" }, 400);
     const r = await ctx.runMutation(internal.agent.link, { sender, code: code.trim() });
     return json(
