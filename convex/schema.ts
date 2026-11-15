@@ -47,6 +47,7 @@ export default defineSchema({
     linkCode: v.optional(v.string()),
     autoScanPhotos: v.optional(v.boolean()),
     deleteOriginals: v.optional(v.boolean()),
+    googleCalendar: v.optional(v.boolean()),
     lastPhotoSyncAt: v.optional(v.number()),
   })
     .index("by_user", ["userId"])

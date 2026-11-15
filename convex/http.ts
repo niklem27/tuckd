@@ -55,7 +55,7 @@ const VERB: Record<string, string> = {
   product: "Saved",
   recipe: "Saved recipe",
   todo: "Reminder set for",
-  memory: "Kept",
+  memory: "Tucked",
 };
 
 http.route({

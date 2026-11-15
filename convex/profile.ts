@@ -23,6 +23,7 @@ export const upsert = mutation({
     lastSyncedAt: v.optional(v.number()),
     autoScanPhotos: v.optional(v.boolean()),
     deleteOriginals: v.optional(v.boolean()),
+    googleCalendar: v.optional(v.boolean()),
     lastPhotoSyncAt: v.optional(v.number()),
   },
   handler: async (ctx, args) => {

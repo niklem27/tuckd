@@ -32,6 +32,7 @@ export default function SettingsScreen() {
   const [freeing, setFreeing] = useState(false);
   const briefEnabled = me?.profile?.briefEnabled ?? false;
   const deleteOriginalsOn = me?.profile?.deleteOriginals ?? false;
+  const googleCalendarOn = me?.profile?.googleCalendar ?? false;
   const sorted = useQuery(api.screenshots.deletableOriginals, isAuthenticated ? { scope: "sorted" } : "skip");
   const markDeleted = useMutation(api.screenshots.markOriginalsDeleted);
 
@@ -135,6 +136,28 @@ export default function SettingsScreen() {
             />
           </Group>
         ) : null}
+
+        <Group title="Calendar">
+          <View style={styles.toggleRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.rowTitle, { color: colors.text }]}>Use Google Calendar</Text>
+              <Text style={{ color: colors.muted, fontSize: 13 }}>
+                {googleCalendarOn
+                  ? "Events open in Google Calendar, prefilled. Tap Save there."
+                  : "Events go straight into your Google calendar if it's on this phone, otherwise your default calendar"}
+              </Text>
+            </View>
+            <Switch
+              testID="toggle-google-calendar"
+              accessibilityLabel="Use Google Calendar"
+              value={googleCalendarOn}
+              onValueChange={(next) => {
+                upsert({ googleCalendar: next });
+              }}
+              trackColor={{ true: colors.accent }}
+            />
+          </View>
+        </Group>
 
         <Group title="Notifications">
           <View style={styles.toggleRow}>
