@@ -96,7 +96,7 @@ export default function InboxScreen() {
         </View>
       </View>
       <SyncBanner />
-      {error ? <Text style={[styles.error, { color: colors.archive }]}>{error}</Text> : null}
+      {error ? <Text style={[styles.error, { color: colors.danger }]}>{error}</Text> : null}
       {failed > 0 ? (
         <Text style={[styles.error, { color: colors.muted }]} testID="failed-note">
           {failed} screenshot{failed === 1 ? "" : "s"} couldn’t be read. Retry from Settings.

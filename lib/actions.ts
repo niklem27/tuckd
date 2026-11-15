@@ -1,4 +1,4 @@
-import { useMutation } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import * as Haptics from "expo-haptics";
 import * as Linking from "expo-linking";
 import { useCallback } from "react";
@@ -32,6 +32,9 @@ export function productUrl(item: { url?: string; title: string }) {
 }
 
 export function useItemActions(notify: (message: string, onUndo?: () => void) => void) {
+  const { isAuthenticated } = useConvexAuth();
+  const me = useQuery(api.profile.me, isAuthenticated ? {} : "skip");
+  const calendarTarget = me?.profile?.googleCalendar ? "google" : "device";
   const keep = useMutation(api.items.keep);
   const archive = useMutation(api.items.archive);
   const undo = useMutation(api.items.undo);
@@ -54,7 +57,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
     async (item: ActionableItem) => {
       await archive({ itemId: item._id });
       cancelItemReminder(item._id);
-      notify("Archived", () => undo({ itemId: item._id }));
+      notify("Deleted", () => undo({ itemId: item._id }));
     },
     [archive, undo, notify],
   );
@@ -64,12 +67,12 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
       try {
         switch (item.type) {
           case "event": {
-            await addToCalendar(item);
+            const where = await addToCalendar(item, calendarTarget);
             await markDone({ itemId: item._id });
             scheduleItemReminder(item).catch(() => {});
             Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success).catch(() => {});
             notify(
-              `Added to calendar: ${formatFullDate(item.startsAt!)} at ${formatTime(item.startsAt!)}`,
+              `${calendarTarget === "google" ? "Opened Google Calendar" : `Added to ${where}`}: ${formatFullDate(item.startsAt!)} at ${formatTime(item.startsAt!)}`,
               () => undo({ itemId: item._id }),
             );
             return true;
@@ -113,7 +116,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
         return false;
       }
     },
-    [markDone, markActed, keep, undo, notify, doKeep],
+    [markDone, markActed, keep, undo, notify, doKeep, calendarTarget],
   );
 
   return { keep: doKeep, archive: doArchive, act };

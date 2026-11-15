@@ -2,10 +2,10 @@
 
 _meta:
     remote_id: 90b3567b-2cf7-4c4e-9234-f8fca2177382
-    remote_version: 2
-    local_version: 2
-    last_synced_at: "2026-11-15T11:23:29-08:00"
-    checksum: 09b9f324983c18717c2c5f59becd36155ccc6c18f2577968b3f247824adfcc56
+    remote_version: 4
+    local_version: 4
+    last_synced_at: "2026-11-15T15:47:55-08:00"
+    checksum: 46b5af873e7a8bdd473d0562a039bb395d66d31498535e2af111a39edb0dd93a
 test:
     metadata:
         name: triage
@@ -27,7 +27,7 @@ test:
           step_description: Extract the title of the new top card in the Inbox.
           variable_name: archived_title
         - type: instructions
-          step_description: Swipe the top card to the left to archive it.
+          step_description: Swipe the top card to the left to delete it.
         - type: instructions
           step_description: Tap the "Undo" button next to the Inbox title.
         - type: validation

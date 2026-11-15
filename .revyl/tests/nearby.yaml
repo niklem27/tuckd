@@ -2,10 +2,10 @@
 
 _meta:
     remote_id: ef6d1694-d043-42b6-9c35-37906df3b55b
-    remote_version: 1
-    local_version: 1
-    last_synced_at: "2026-11-15T10:34:35-08:00"
-    checksum: 7f78e107fc741a3224c9bd3b2225c21db8def19d3c785c4b89249347bc5e94c4
+    remote_version: 3
+    local_version: 3
+    last_synced_at: "2026-11-15T15:47:59-08:00"
+    checksum: 64eac3e1f442e421d53af3cc02e213896d72dddb8e43c3180908db72e413aafd
 test:
     metadata:
         name: nearby
@@ -25,7 +25,7 @@ test:
           condition: Is the top Inbox card something other than a Place card for Ramen Nagi?
           body:
             - type: instructions
-              step_description: Tap the X (Archive) button below the card.
+              step_description: Tap the X (Delete) button below the card.
         - type: instructions
           step_description: Tap the heart (Tuck) button to tuck the Ramen Nagi card.
         - type: manual

@@ -126,16 +126,16 @@ export function ItemSheet({ itemId }: { itemId: Id<"items"> }) {
           ))}
         </View>
 
-        <Button label={meta.action} icon={meta.actionIcon} color={meta.color} testID="btn-sheet-act" onPress={() => actions.act(item)} style={{ marginTop: 8 }} />
+        <Button label={meta.action} icon={meta.actionIcon} testID="btn-sheet-act" onPress={() => actions.act(item)} style={{ marginTop: 8 }} />
         <Button
-          label="Archive"
+          label="Delete"
           variant="danger"
-          icon="archive-outline"
+          icon="trash-outline"
           testID="btn-sheet-archive"
           onPress={() =>
-            Alert.alert("Archive this item?", undefined, [
+            Alert.alert("Delete this card?", undefined, [
               { text: "Cancel", style: "cancel" },
-              { text: "Archive", style: "destructive", onPress: () => actions.archive(item).then(() => router.back()) },
+              { text: "Delete", style: "destructive", onPress: () => actions.archive(item).then(() => router.back()) },
             ])
           }
         />
@@ -148,7 +148,7 @@ export function ItemSheet({ itemId }: { itemId: Id<"items"> }) {
 const styles = StyleSheet.create({
   content: { padding: 20, gap: 12, paddingBottom: 80 },
   missing: { flex: 1, alignItems: "center", justifyContent: "center" },
-  imageWrap: { height: 320, borderRadius: 20, overflow: "hidden" },
+  imageWrap: { height: 320, borderRadius: 16, overflow: "hidden" },
   titleRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   title: { fontSize: 26, fontWeight: "800", letterSpacing: -0.3, flexShrink: 1 },
   input: { borderWidth: 1, borderRadius: 12, paddingHorizontal: 10, paddingVertical: 6 },

@@ -55,7 +55,6 @@ export function ItemCard({ item, index, onAct }: { item: InboxItem; index: numbe
             testID={index === 0 ? "btn-act" : undefined}
             label={meta.action}
             icon={meta.actionIcon}
-            color={meta.color}
             onPress={onAct}
             style={{ marginTop: 6 }}
           />
@@ -68,14 +67,9 @@ export function ItemCard({ item, index, onAct }: { item: InboxItem; index: numbe
 const styles = StyleSheet.create({
   card: {
     flex: 1,
-    borderRadius: 20,
+    borderRadius: 16,
     overflow: "hidden",
-    borderWidth: StyleSheet.hairlineWidth,
-    shadowColor: "#000",
-    shadowOpacity: 0.12,
-    shadowRadius: 18,
-    shadowOffset: { width: 0, height: 8 },
-    elevation: 6,
+    borderWidth: 1,
   },
   imageWrap: { flex: 1, minHeight: 140, alignItems: "center", justifyContent: "center", overflow: "hidden" },
   accentBar: { position: "absolute", left: 0, right: 0, bottom: 0, height: 4 },

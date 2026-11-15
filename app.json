@@ -10,7 +10,7 @@
     "ios": {
       "bundleIdentifier": "com.snapback.app",
       "supportsTablet": false,
-      "icon": "./assets/expo.icon",
+      "icon": "./assets/images/icon.png",
       "infoPlist": {
         "NSPhotoLibraryUsageDescription": "Tuckd reads your screenshots to turn them into actionable cards.",
         "NSCalendarsFullAccessUsageDescription": "Tuckd adds events from your screenshots to your calendar.",
@@ -23,7 +23,7 @@
     "android": {
       "package": "com.snapback.app",
       "adaptiveIcon": {
-        "backgroundColor": "#7C3AED",
+        "backgroundColor": "#FBF6EE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
         "backgroundImage": "./assets/images/android-icon-background.png",
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
@@ -49,9 +49,9 @@
       [
         "expo-splash-screen",
         {
-          "backgroundColor": "#7C3AED",
+          "backgroundColor": "#FBF6EE",
           "image": "./assets/images/splash-icon.png",
-          "imageWidth": 76
+          "imageWidth": 200
         }
       ],
       [
