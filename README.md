@@ -1,58 +1,47 @@
-# Tuckd
+# tuckd
 
-Keep what matters, tuckd away.
+**Keep what matters, tuckd away.**
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+People take hundreds of screenshots of flyers, restaurants, products, recipes and deadlines, then never look at them again. Tuckd turns each screenshot into something you can act on, and a 30-second daily swipe keeps your camera roll useful.
 
-## Get started
+## How it works
+1. **Snap.** Take screenshots like you always do.
+2. **Sort.** Tuckd's AI reads each one and turns it into a card: event, place, product, recipe, to-do or memory. Sensitive screenshots like bank balances and 2FA codes are skipped automatically.
+3. **Swipe.** Right to tuck it, left to archive, up to act: add the event to your calendar, open the place in Maps, or set a reminder.
+4. **Return.** Every morning, Tuckd tells you which of your saved things matter today.
 
-1. Install dependencies
+## Features
+- AI screenshot sorting with live-updating cards
+- A daily swipe inbox with undo and an inbox-zero streak
+- A Today view and a morning brief
+- One-tap actions: calendar, Maps, links and reminders
+- Screenshot Wrapped, e.g. "You saved 43 restaurants and went to 2"
+- Sensitive-content filtering, and images are deleted after processing
 
-   ```bash
-   npm install
-   ```
+## Built with
+| Tool | Role |
+|---|---|
+| [Capy](https://capy.ai) | Wrote the app with parallel coding agents |
+| [Convex](https://convex.dev) | Backend: database, file storage, AI actions, crons, auth |
+| [Revyl](https://revyl.com) | Runs and tests the app on cloud iOS/Android devices |
+| Expo + React Native | The mobile app (iOS and Android) |
+| OpenAI | Vision model that sorts screenshots |
 
-2. Start the app
-
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **src/app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
+## Run it locally
 ```bash
-npm run reset-project
+npm install
+npx convex dev          # starts the backend and writes EXPO_PUBLIC_CONVEX_URL to .env.local
+npx convex env set OPENAI_API_KEY sk-...
+npx expo start
 ```
+In dev mode, tap **Load demo screenshots** to try it without your own camera roll.
 
-This command will move the starter code to the **example** directory and create a blank **src/app** directory where you can start developing.
+## Testing
+The core flows (onboarding, demo load, swipe triage, event to calendar, the Today feed) are tested on cloud iPhones with Revyl:
+```bash
+revyl dev --platform ios      # run the app on a cloud simulator
+```
+Test definitions are in `.revyl/tests/`.
 
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+Built at the Consumer Mobile Hackathon at YC, November 15, 2026.
