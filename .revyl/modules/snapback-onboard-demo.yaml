@@ -1,0 +1,26 @@
+blocks:
+  - type: instructions
+    step_description: On the welcome screen, tap "Get started".
+  - type: instructions
+    step_description: Tap "Allow photo access".
+  - type: if
+    condition: Is a system dialog asking for photo library access visible?
+    then:
+      - type: instructions
+        step_description: Tap "Allow Full Access" (or "Allow Access to All Photos").
+  - type: if
+    condition: Is a "Continue" button visible?
+    then:
+      - type: instructions
+        step_description: Tap "Continue".
+  - type: instructions
+    step_description: Tap "Not now" on the morning brief screen.
+  - type: validation
+    step_description: The Inbox screen is visible with a "Load demo screenshots" button.
+  - type: instructions
+    step_description: Tap "Load demo screenshots".
+  - type: manual
+    step_type: wait
+    step_description: "30"
+  - type: validation
+    step_description: A swipeable card is visible on the Inbox screen.

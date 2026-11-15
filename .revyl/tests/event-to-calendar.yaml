@@ -1,0 +1,39 @@
+# Revyl Test Definition
+
+_meta:
+    remote_id: 2525c48d-ebdb-4129-a973-abca89daf5ac
+    remote_version: 1
+    local_version: 1
+    last_synced_at: "2026-11-15T10:34:29-08:00"
+    checksum: 35737724ac9500770e38493cae267bf084ac772f2fd91120b99842dd53989c62
+test:
+    metadata:
+        name: event-to-calendar
+        platform: ios
+        tags:
+            - snapback
+            - core
+    build:
+        name: Snapback iOS
+    blocks:
+        - type: module_import
+          module: snapback-onboard-demo
+        - type: manual
+          step_type: wait
+          step_description: "15"
+        - type: while
+          condition: Is the top Inbox card something other than a Jazz Night event?
+          body:
+            - type: instructions
+              step_description: Tap the heart (Keep) button below the card.
+        - type: validation
+          step_description: The top card is an Event card about Jazz Night.
+        - type: instructions
+          step_description: Tap "Add to calendar" on the Jazz Night card.
+        - type: if
+          condition: Is a system dialog asking for calendar access visible?
+          then:
+            - type: instructions
+              step_description: Tap "Allow Full Access" (or "OK"/"Allow").
+        - type: validation
+          step_description: A confirmation toast says "Added to calendar" with today's date and 8:00 PM.

@@ -1,0 +1,38 @@
+# Revyl Test Definition
+
+_meta:
+    remote_id: 90b3567b-2cf7-4c4e-9234-f8fca2177382
+    remote_version: 1
+    local_version: 1
+    last_synced_at: "2026-11-15T10:34:26-08:00"
+    checksum: c4ec6cf7019db0e09f4317750e2c75b4fa1a7c3ea757e77192769d322e35920b
+test:
+    metadata:
+        name: triage
+        platform: ios
+        tags:
+            - snapback
+            - core
+    build:
+        name: Snapback iOS
+    blocks:
+        - type: module_import
+          module: snapback-onboard-demo
+        - type: extraction
+          step_description: Extract the title of the top card in the Inbox.
+          variable_name: kept_title
+        - type: instructions
+          step_description: Swipe the top card to the right to keep it.
+        - type: extraction
+          step_description: Extract the title of the new top card in the Inbox.
+          variable_name: archived_title
+        - type: instructions
+          step_description: Swipe the top card to the left to archive it.
+        - type: instructions
+          step_description: Tap "Undo" in the toast at the bottom of the screen.
+        - type: validation
+          step_description: The top card in the Inbox is titled "{{archived_title}}".
+        - type: instructions
+          step_description: Open the Saved tab.
+        - type: validation
+          step_description: An item titled "{{kept_title}}" is listed on the Saved screen.

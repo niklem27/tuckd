@@ -62,7 +62,8 @@
     "convex:dev": "convex dev",
     "eval:ai": "tsx scripts/eval-ai.ts",
     "demo:render": "bash scripts/render-demo-assets.sh",
-    "test:revyl": "revyl test run --all",
+    "test:revyl": "revyl workflow run snapback-core",
+    "build:revyl:ios": "revyl build --profile preview --platform ios --remote --env EXPO_PUBLIC_DEMO_MODE=true",
     "revyl:dev": "revyl dev --platform ios"
   },
   "private": true
