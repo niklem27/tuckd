@@ -1,9 +1,8 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { config } from "dotenv";
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { MODEL } from "../convex/ai/model";
-import { NormalizedResult, parseModelText, SYSTEM_PROMPT, todayIn } from "../convex/ai/extraction";
+import { NormalizedResult } from "../convex/ai/extraction";
+import { extractFromImage, MODEL } from "../convex/ai/model";
 
 config({ path: ".env.local" });
 
@@ -55,33 +54,18 @@ function check(exp: Expected, got: NormalizedResult): string[] {
 }
 
 async function main() {
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = process.env.OPENAI_API_KEY;
   if (!apiKey) {
-    console.error("Set ANTHROPIC_API_KEY in your shell or .env.local to run the eval.");
+    console.error("Set OPENAI_API_KEY in your shell or .env.local to run the eval.");
     process.exit(2);
   }
-  const client = new Anthropic({ apiKey });
+  console.log(`Model: ${MODEL}, timezone: ${TZ}\n`);
   const expected: Expected[] = JSON.parse(readFileSync(join(dir, "expected.json"), "utf8"));
   const results = await Promise.all(
     expected.map(async (exp) => {
       try {
         const data = readFileSync(join(dir, exp.file)).toString("base64");
-        const res = await client.messages.create({
-          model: MODEL,
-          max_tokens: 800,
-          system: SYSTEM_PROMPT(todayIn(TZ), TZ),
-          messages: [
-            {
-              role: "user",
-              content: [
-                { type: "image", source: { type: "base64", media_type: "image/png", data } },
-                { type: "text", text: "Analyze this screenshot and return the JSON." },
-              ],
-            },
-          ],
-        });
-        const text = res.content.map((b) => (b.type === "text" ? b.text : "")).join("");
-        const got = parseModelText(text);
+        const got = await extractFromImage(apiKey, data, "image/png", TZ);
         return { exp, got, problems: check(exp, got) };
       } catch (err) {
         return { exp, got: null, problems: [err instanceof Error ? err.message : String(err)] };

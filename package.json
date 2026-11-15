@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "main": "expo-router/entry",
   "dependencies": {
-    "@anthropic-ai/sdk": "^1.8.0",
     "@auth/core": "^0.41.3",
     "@convex-dev/auth": "^0.0.98",
     "@expo/ui": "~58.0.28",
@@ -33,6 +32,7 @@
     "expo-symbols": "~58.0.5",
     "expo-system-ui": "~58.0.7",
     "expo-web-browser": "~58.0.8",
+    "openai": "^7.57.0",
     "react": "19.3.0",
     "react-dom": "19.3.0",
     "react-native": "0.88.1",
@@ -63,7 +63,7 @@
     "eval:ai": "tsx scripts/eval-ai.ts",
     "demo:render": "bash scripts/render-demo-assets.sh",
     "test:revyl": "revyl workflow run snapback-core",
-    "build:revyl:ios": "revyl build --profile preview --platform ios --remote --env EXPO_PUBLIC_DEMO_MODE=true",
+    "build:revyl:ios": "revyl build --profile preview --platform ios --remote --image ios-macos-26-xcode-27.2 --env EXPO_PUBLIC_DEMO_MODE=true",
     "revyl:dev": "revyl dev --platform ios"
   },
   "private": true
