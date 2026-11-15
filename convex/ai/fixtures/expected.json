@@ -1,0 +1,72 @@
+[
+  {
+    "file": "jazz-night-flyer.png",
+    "sensitive": false,
+    "type": "event",
+    "titleIncludes": [
+      "jazz"
+    ],
+    "startsAtLocal": {
+      "day": "today",
+      "hour": 20
+    },
+    "locationIncludes": "blue room"
+  },
+  {
+    "file": "ramen-instagram.png",
+    "sensitive": false,
+    "type": "place",
+    "titleIncludes": [
+      "ramen",
+      "nagi"
+    ],
+    "locationIncludes": "nagi"
+  },
+  {
+    "file": "sneaker-product.png",
+    "sensitive": false,
+    "type": "product",
+    "titleIncludes": [
+      "stride"
+    ],
+    "priceIncludes": "129"
+  },
+  {
+    "file": "pasta-recipe.png",
+    "sensitive": false,
+    "type": "recipe",
+    "titleIncludes": [
+      "pasta"
+    ]
+  },
+  {
+    "file": "concert-ticket.png",
+    "sensitive": false,
+    "type": "event",
+    "titleIncludes": [
+      "phoebe"
+    ],
+    "startsAtLocal": {
+      "date": "2026-12-05",
+      "hour": 19
+    }
+  },
+  {
+    "file": "job-posting.png",
+    "sensitive": false,
+    "type": "todo",
+    "titleIncludes": [
+      "design"
+    ],
+    "deadlineLocalDate": "2026-11-20"
+  },
+  {
+    "file": "funny-tweet.png",
+    "sensitive": false,
+    "type": "memory"
+  },
+  {
+    "file": "bank-balance.png",
+    "sensitive": true
+  }
+]
