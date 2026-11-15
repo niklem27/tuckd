@@ -1,0 +1,43 @@
+# Revyl Test Definition
+
+_meta:
+    remote_id: 11cb01e4-088c-42e7-af42-da91e184a6e9
+    remote_version: 1
+    local_version: 1
+    last_synced_at: "2026-11-15T11:32:40-08:00"
+    checksum: 6edbf300f6b848948a4a0fff6c675ea560bcf94cf1e9b3f922a509a57afbec23
+test:
+    metadata:
+        name: demo-check
+        platform: ios
+        tags:
+            - smoke
+            - snapback
+    build:
+        name: Snapback iOS
+    blocks:
+        - type: module_import
+          module: snapback-onboard-demo
+        - type: validation
+          step_description: At least one card is visible in the Inbox swipe deck.
+        - type: extraction
+          step_description: Extract the title of the top card in the Inbox.
+          variable_name: kept_title
+        - type: instructions
+          step_description: Swipe the top card to the right to keep it.
+        - type: validation
+          step_description: A "Kept" toast is visible and the top card is no longer "{{kept_title}}".
+        - type: while
+          condition: Is the top Inbox card something other than a Jazz Night event?
+          body:
+            - type: instructions
+              step_description: Tap the heart (Keep) button below the card.
+        - type: instructions
+          step_description: Tap "Add to calendar" on the Jazz Night card.
+        - type: if
+          condition: Is a system dialog asking for calendar access visible?
+          then:
+            - type: instructions
+              step_description: Tap "Allow Full Access" (or "OK"/"Allow").
+        - type: validation
+          step_description: A confirmation toast says "Added to calendar" with today's date and 8:00 PM.
