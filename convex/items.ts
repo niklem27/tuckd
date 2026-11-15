@@ -101,6 +101,30 @@ export const saved = query({
   },
 });
 
+export const wishlist = query({
+  args: {},
+  handler: async (ctx) => {
+    const userId = await currentUser(ctx);
+    if (!userId) return [];
+    const products = [];
+    for (const state of ["inbox", "kept", "done"] as const) {
+      const rows = await ctx.db
+        .query("items")
+        .withIndex("by_user_state", (q) => q.eq("userId", userId).eq("state", state))
+        .filter((q) => q.eq(q.field("type"), "product"))
+        .collect();
+      products.push(...rows);
+    }
+    products.sort((a, b) => b.createdAt - a.createdAt);
+    return await Promise.all(
+      products.map(async (item) => {
+        const { _id, title, price, url, thumbUrl } = await withThumb(ctx, item);
+        return { _id, title, price, url, thumbUrl };
+      }),
+    );
+  },
+});
+
 export const keptPlaces = query({
   args: {},
   handler: async (ctx) => {
