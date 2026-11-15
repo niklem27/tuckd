@@ -2,10 +2,10 @@
 
 _meta:
     remote_id: 90b3567b-2cf7-4c4e-9234-f8fca2177382
-    remote_version: 3
-    local_version: 3
-    last_synced_at: "2026-11-15T14:53:47-08:00"
-    checksum: c4a6434ae82e3bb0424032bd3ddd676cb41e653b74b024242b525725d9be8697
+    remote_version: 4
+    local_version: 4
+    last_synced_at: "2026-11-15T15:47:55-08:00"
+    checksum: 46b5af873e7a8bdd473d0562a039bb395d66d31498535e2af111a39edb0dd93a
 test:
     metadata:
         name: triage
