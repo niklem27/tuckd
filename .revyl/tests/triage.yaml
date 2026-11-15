@@ -27,7 +27,7 @@ test:
           step_description: Extract the title of the new top card in the Inbox.
           variable_name: archived_title
         - type: instructions
-          step_description: Swipe the top card to the left to archive it.
+          step_description: Swipe the top card to the left to delete it.
         - type: instructions
           step_description: Tap the "Undo" button next to the Inbox title.
         - type: validation

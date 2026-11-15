@@ -87,7 +87,7 @@ function TopCard({
           <Text style={[styles.stamp, { color: colors.keep, borderColor: colors.keep, transform: [{ rotate: "-12deg" }] }]}>TUCK</Text>
         </Animated.View>
         <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.archive + "33" }, archiveStyle]}>
-          <Text style={[styles.stamp, { color: colors.archive, borderColor: colors.archive, transform: [{ rotate: "12deg" }] }]}>ARCHIVE</Text>
+          <Text style={[styles.stamp, { color: colors.archive, borderColor: colors.archive, transform: [{ rotate: "12deg" }] }]}>DELETE</Text>
         </Animated.View>
         <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.accent + "33" }, actStyle]}>
           <Text style={[styles.stamp, { color: colors.accent, borderColor: colors.accent }]}>ACT NOW</Text>
@@ -155,7 +155,7 @@ export function SwipeDeck({
         </Animated.View>
       </View>
       <View style={styles.controls}>
-        <RoundButton testID="btn-archive" label="Archive" icon="close" color={colors.archive} onPress={() => commit(top, "left")} />
+        <RoundButton testID="btn-archive" label="Delete" icon="close" color={colors.archive} onPress={() => commit(top, "left")} />
         <RoundButton testID="btn-act-now" label="Act now" icon="flash" color={colors.accent} small onPress={() => commit(top, "up")} />
         <RoundButton testID="btn-keep" label="Tuck" icon="heart" color={colors.accent} onPress={() => commit(top, "right")} />
       </View>

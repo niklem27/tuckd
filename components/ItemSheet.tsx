@@ -128,14 +128,14 @@ export function ItemSheet({ itemId }: { itemId: Id<"items"> }) {
 
         <Button label={meta.action} icon={meta.actionIcon} testID="btn-sheet-act" onPress={() => actions.act(item)} style={{ marginTop: 8 }} />
         <Button
-          label="Archive"
+          label="Delete"
           variant="danger"
-          icon="archive-outline"
+          icon="trash-outline"
           testID="btn-sheet-archive"
           onPress={() =>
-            Alert.alert("Archive this item?", undefined, [
+            Alert.alert("Delete this card?", undefined, [
               { text: "Cancel", style: "cancel" },
-              { text: "Archive", style: "destructive", onPress: () => actions.archive(item).then(() => router.back()) },
+              { text: "Delete", style: "destructive", onPress: () => actions.archive(item).then(() => router.back()) },
             ])
           }
         />

@@ -163,7 +163,7 @@ export default function PhotosScreen() {
                       {scan.item.title}
                     </Text>
                     <Text style={{ color: colors.muted, fontSize: 13 }}>
-                      {scan.item.state === "inbox" ? "In your Inbox" : scan.item.state === "archived" ? "Archived" : "Saved"}
+                      {scan.item.state === "inbox" ? "In your Inbox" : scan.item.state === "archived" ? "Deleted" : "Saved"}
                       {scan.originalDeleted ? " · original deleted" : ""}
                     </Text>
                   </>

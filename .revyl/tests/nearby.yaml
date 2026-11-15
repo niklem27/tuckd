@@ -25,7 +25,7 @@ test:
           condition: Is the top Inbox card something other than a Place card for Ramen Nagi?
           body:
             - type: instructions
-              step_description: Tap the X (Archive) button below the card.
+              step_description: Tap the X (Delete) button below the card.
         - type: instructions
           step_description: Tap the heart (Tuck) button to tuck the Ramen Nagi card.
         - type: manual
