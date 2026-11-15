@@ -2,10 +2,10 @@
 
 _meta:
     remote_id: ac6e35b5-bc94-499f-86a0-3eb025079f04
-    remote_version: 1
-    local_version: 1
-    last_synced_at: "2026-11-15T10:34:24-08:00"
-    checksum: 6ec755ab70dba71f7ba34e9155f759e4c8a3892e1ce207b4e752e6cd9c8612cb
+    remote_version: 2
+    local_version: 2
+    last_synced_at: "2026-11-15T14:53:46-08:00"
+    checksum: 9101b5308fedcce8e47cefbadd8183cac5b3f52fa6db589a577fba98e253ac27
 test:
     metadata:
         name: sensitive-skip
