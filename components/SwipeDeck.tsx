@@ -157,7 +157,7 @@ export function SwipeDeck({
       <View style={styles.controls}>
         <RoundButton testID="btn-archive" label="Archive" icon="close" color={colors.archive} onPress={() => commit(top, "left")} />
         <RoundButton testID="btn-act-now" label="Act now" icon="flash" color={colors.accent} small onPress={() => commit(top, "up")} />
-        <RoundButton testID="btn-keep" label="Keep" icon="heart" color={colors.keep} onPress={() => commit(top, "right")} />
+        <RoundButton testID="btn-keep" label="Tuck" icon="heart" color={colors.keep} onPress={() => commit(top, "right")} />
       </View>
     </View>
   );

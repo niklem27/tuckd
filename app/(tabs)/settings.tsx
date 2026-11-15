@@ -7,6 +7,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { useIngestContext } from "@/components/IngestProvider";
 import { api } from "@/convex/_generated/api";
+import { deleteOriginals } from "@/lib/originals";
 import { DAY, formatBytes, startOfDay } from "@/lib/format";
 import { getPushToken, previewMorningBrief, requestNotificationPermission } from "@/lib/notifications";
 import { isDemoMode, usePalette } from "@/lib/theme";
@@ -28,13 +29,30 @@ export default function SettingsScreen() {
   const linkCode = useMutation(api.agent.linkCode);
   const { sync, loadDemo, uploading } = useIngestContext();
   const [syncing, setSyncing] = useState(false);
+  const [freeing, setFreeing] = useState(false);
   const briefEnabled = me?.profile?.briefEnabled ?? false;
+  const deleteOriginalsOn = me?.profile?.deleteOriginals ?? false;
+  const sorted = useQuery(api.screenshots.deletableOriginals, isAuthenticated ? { scope: "sorted" } : "skip");
+  const markDeleted = useMutation(api.screenshots.markOriginalsDeleted);
+
+  const freeSpace = async () => {
+    if (!sorted?.length) return;
+    setFreeing(true);
+    try {
+      const n = await deleteOriginals(sorted, markDeleted);
+      if (n > 0) Alert.alert(`Deleted ${n} original${n === 1 ? "" : "s"}`, "Your cards stay here. iOS keeps them in Recently Deleted for 30 days.");
+    } catch (err) {
+      Alert.alert("Couldn't delete originals", err instanceof Error ? err.message : String(err));
+    } finally {
+      setFreeing(false);
+    }
+  };
 
   const toggleBrief = async (next: boolean) => {
     if (next) {
       const granted = await requestNotificationPermission();
       if (!granted) {
-        Alert.alert("Notifications are off", "Turn on notifications for Snapback in Settings to get the morning brief.");
+        Alert.alert("Notifications are off", "Turn on notifications for Tuckd in Settings to get the morning brief.");
         return;
       }
       const token = await getPushToken();
@@ -70,18 +88,43 @@ export default function SettingsScreen() {
           {(status?.failed ?? 0) > 0 ? (
             <Button label={`Retry ${status!.failed} failed`} icon="reload" variant="secondary" testID="btn-retry-failed" onPress={() => retryFailed()} />
           ) : null}
+          <View style={styles.toggleRow}>
+            <View style={{ flex: 1 }}>
+              <Text style={[styles.rowTitle, { color: colors.text }]}>Delete originals after sorting</Text>
+              <Text style={{ color: colors.muted, fontSize: 13 }}>Once you act on or archive a card, its screenshot or photo is removed from your phone</Text>
+            </View>
+            <Switch
+              testID="toggle-delete-originals"
+              accessibilityLabel="Delete originals after sorting"
+              value={deleteOriginalsOn}
+              onValueChange={(next) => {
+                upsert({ deleteOriginals: next });
+              }}
+              trackColor={{ true: colors.accent }}
+            />
+          </View>
+          {sorted?.length ? (
+            <Button
+              label={`Free up space (${sorted.length} original${sorted.length === 1 ? "" : "s"})`}
+              icon="trash-bin-outline"
+              variant="secondary"
+              testID="btn-free-space"
+              loading={freeing}
+              onPress={freeSpace}
+            />
+          ) : null}
           {isDemoMode ? (
             <Button label="Load demo screenshots" icon="images-outline" variant="secondary" testID="btn-load-demo" loading={!!uploading} onPress={loadDemo} />
           ) : null}
         </Group>
 
         {AGENT_URL ? (
-          <Group title="Text Snapback">
+          <Group title="Text Tuckd">
             <Text style={{ color: colors.muted, fontSize: 14, lineHeight: 20 }}>
-              Send screenshots to the Snapback bot on Telegram and they land here, sorted. It can also text you the morning brief.
+              Send screenshots to the Tuckd bot on Telegram and they land here, sorted. It can also text you the morning brief.
             </Text>
             <Button
-              label="Text Snapback"
+              label="Text Tuckd"
               icon="chatbubble-ellipses-outline"
               variant="secondary"
               testID="btn-text-snapback"

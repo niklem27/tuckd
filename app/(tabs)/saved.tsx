@@ -5,6 +5,7 @@ import { ActivityIndicator, FlatList, ScrollView, StyleSheet, Text, TextInput, V
 import { SafeAreaView } from "react-native-safe-area-context";
 import { EmptyState } from "@/components/EmptyState";
 import { ItemRow, ItemTile } from "@/components/ItemRow";
+import { WishlistSection } from "@/components/WishlistSection";
 import { WrappedCard } from "@/components/WrappedCard";
 import { api } from "@/convex/_generated/api";
 import { ITEM_TYPES, typeMeta, usePalette } from "@/lib/theme";
@@ -13,6 +14,7 @@ export default function SavedScreen() {
   const { colors } = usePalette();
   const { isAuthenticated } = useConvexAuth();
   const saved = useQuery(api.items.saved, isAuthenticated ? {} : "skip");
+  const wishlist = useQuery(api.items.wishlist, isAuthenticated ? {} : "skip");
   const [query, setQuery] = useState("");
   const [debounced, setDebounced] = useState("");
   useEffect(() => {
@@ -48,12 +50,13 @@ export default function SavedScreen() {
         )
       ) : saved === undefined ? (
         <ActivityIndicator style={{ marginTop: 40 }} color={colors.accent} />
-      ) : saved.length === 0 ? (
-        <EmptyState icon="bookmark-outline" title="Nothing saved yet" body="Swipe right on a card in the Inbox to keep it here." testID="saved-empty" />
+      ) : saved.length === 0 && !wishlist?.length ? (
+        <EmptyState icon="bookmark-outline" title="Nothing saved yet" body="Swipe right on a card in the Inbox to tuck it here." testID="saved-empty" />
       ) : (
         <ScrollView contentContainerStyle={{ paddingBottom: 40 }} testID="saved-list">
           <WrappedCard />
-          {ITEM_TYPES.map((type) => {
+          <WishlistSection items={wishlist ?? []} />
+          {ITEM_TYPES.filter((type) => type !== "product").map((type) => {
             const group = saved.filter((i) => i.type === type);
             if (group.length === 0) return null;
             const meta = typeMeta[type];

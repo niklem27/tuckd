@@ -27,7 +27,7 @@ test:
             - type: instructions
               step_description: Tap the X (Archive) button below the card.
         - type: instructions
-          step_description: Tap the heart (Keep) button to keep the Ramen Nagi card.
+          step_description: Tap the heart (Tuck) button to tuck the Ramen Nagi card.
         - type: manual
           step_type: set_location
           step_description: 37.4449,-122.1610

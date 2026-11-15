@@ -39,7 +39,7 @@ export function AuthGate({ children }: { children: ReactNode }) {
     <View style={[styles.center, { backgroundColor: colors.background }]}>
       {error ? (
         <>
-          <Text style={[styles.title, { color: colors.text }]}>Can’t reach Snapback</Text>
+          <Text style={[styles.title, { color: colors.text }]}>Can’t reach Tuckd</Text>
           <Text style={[styles.body, { color: colors.muted }]}>{error}</Text>
           <Button label="Try again" onPress={trySignIn} testID="btn-retry-auth" />
         </>

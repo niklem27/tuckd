@@ -111,7 +111,7 @@ http.route({
       }
       await new Promise((resolve) => setTimeout(resolve, 1000));
     }
-    return json({ status: "processing", reply: "Still sorting that one. It will show up in your Snapback inbox shortly." });
+    return json({ status: "processing", reply: "Still sorting that one. It will show up in your Tuckd inbox shortly." });
   }),
 });
 
@@ -123,7 +123,7 @@ http.route({
     const { sender } = await readToolCall(req);
     if (!sender) return json({ error: "sender is required" }, 400);
     const brief = await ctx.runQuery(internal.agent.briefItems, { sender, now: Date.now() });
-    if (!brief) return json({ count: 0, text: "Send me a screenshot first and I'll start your Snapback." });
+    if (!brief) return json({ count: 0, text: "Send me a screenshot first and I'll start tucking them away." });
     const { items, timezone } = brief;
     if (items.length === 0) return json({ count: 0, text: "Good morning! Nothing you saved is due today." });
     const lines = items.map((i) => `• ${fmtTime(i.at, timezone)} ${i.title}${i.place && !i.title.includes(i.place) && i.place !== i.title ? ` @ ${i.place}` : ""}`);
@@ -145,8 +145,8 @@ http.route({
     const r = await ctx.runMutation(internal.agent.link, { sender, code: code.trim() });
     return json(
       r.linked
-        ? { linked: true, reply: "Linked! Screenshots you text me now land in your Snapback app." }
-        : { linked: false, reply: "That link code didn't match. Open Snapback › Settings › Text Snapback to get a fresh link." },
+        ? { linked: true, reply: "Linked! Screenshots you text me now land in your Tuckd app." }
+        : { linked: false, reply: "That link code didn't match. Open Tuckd › Settings › Text Tuckd to get a fresh link." },
     );
   }),
 });

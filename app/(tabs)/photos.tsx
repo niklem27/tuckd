@@ -13,6 +13,7 @@ import { useIngestContext } from "@/components/IngestProvider";
 import { TypeChip } from "@/components/TypeChip";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
+import { deleteOriginals } from "@/lib/originals";
 import { usePalette } from "@/lib/theme";
 
 const MAX_PICK = 10;
@@ -21,18 +22,18 @@ export default function PhotosScreen() {
   const { colors } = usePalette();
   const { isAuthenticated } = useConvexAuth();
   const data = useQuery(api.screenshots.photoScans, isAuthenticated ? {} : "skip");
-  const scans = data?.rows;
+  const scans = Array.isArray(data) ? data : data?.rows;
   const me = useQuery(api.profile.me, isAuthenticated ? {} : "skip");
   const upsert = useMutation(api.profile.upsert);
   const autoScan = me?.profile?.autoScanPhotos ?? false;
-  const markDeleted = useMutation(api.screenshots.markOriginalDeleted);
+  const markDeleted = useMutation(api.screenshots.markOriginalsDeleted);
   const { scanPhotos, sync, uploading } = useIngestContext();
 
   const toggleAutoScan = async (next: boolean) => {
     if (next) {
       const perm = await MediaLibrary.requestPermissionsAsync(false, ["photo"]);
       if (!perm.granted) {
-        Alert.alert("Photo access is off", "Turn on photo access in Settings so Snapback can scan new photos.");
+        Alert.alert("Photo access is off", "Turn on photo access in Settings so Tuckd can scan new photos.");
         return;
       }
     }
@@ -63,15 +64,14 @@ export default function PhotosScreen() {
 
   const freeable = (scans ?? []).filter((s) => s.localAssetId && !s.originalDeleted && (s.status === "done" || s.status === "skipped"));
 
-  const deleteOriginals = async (rows: typeof freeable) => {
+  const freeOriginals = async (rows: typeof freeable) => {
     if (rows.length === 0) return;
     setFreeing(true);
     try {
-      const perm = await MediaLibrary.requestPermissionsAsync(false, ["photo"]);
-      if (!perm.granted) throw new Error("Photo access is needed to delete originals.");
-      const ok = await MediaLibrary.deleteAssetsAsync(rows.map((r) => r.localAssetId!));
-      if (!ok) return;
-      await Promise.all(rows.map((r) => markDeleted({ screenshotId: r._id as Id<"screenshots"> })));
+      await deleteOriginals(
+        rows.map((r) => ({ screenshotId: r._id as Id<"screenshots">, localAssetId: r.localAssetId! })),
+        markDeleted,
+      );
     } catch (err) {
       Alert.alert("Couldn't delete", err instanceof Error ? err.message : String(err));
     } finally {
@@ -85,7 +85,7 @@ export default function PhotosScreen() {
     <SafeAreaView edges={["top"]} style={[styles.screen, { backgroundColor: colors.background }]}>
       <Text style={[styles.h1, { color: colors.text }]}>Photos</Text>
       <Text style={[styles.sub, { color: colors.muted }]}>
-        Snap or pick photos of posters, flyers, menus and signs. Snapback reads them, then you can delete the originals to free space.
+        Snap or pick photos of posters, flyers, menus and signs. Tuckd reads them, then you can delete the originals to free space.
       </Text>
       <View style={styles.actions}>
         <Button label="Snap a photo" icon="camera-outline" onPress={() => pick("camera")} testID="btn-snap-photo" style={{ flex: 1 }} />
@@ -110,7 +110,7 @@ export default function PhotosScreen() {
       </View>
       {(data?.ignored ?? 0) > 0 ? (
         <Text style={[styles.freed, { color: colors.muted }]} testID="ignored-note">
-          {data!.ignored} ordinary photo{data!.ignored === 1 ? "" : "s"} ignored and deleted from Snapback.
+          {data!.ignored} ordinary photo{data!.ignored === 1 ? "" : "s"} ignored and deleted from Tuckd.
         </Text>
       ) : null}
       {freeable.length > 0 ? (
@@ -123,7 +123,7 @@ export default function PhotosScreen() {
             testID="btn-free-all"
             accessibilityRole="button"
             accessibilityLabel="Delete sorted originals to free space"
-            onPress={() => deleteOriginals(freeable)}
+            onPress={() => freeOriginals(freeable)}
             disabled={freeing}
           >
             <Text style={{ color: colors.keep, fontWeight: "800" }}>{freeing ? "Freeing…" : "Free up"}</Text>
@@ -131,7 +131,7 @@ export default function PhotosScreen() {
         </View>
       ) : freedCount > 0 ? (
         <Text style={[styles.freed, { color: colors.muted }]} testID="freed-note">
-          {freedCount} original{freedCount === 1 ? "" : "s"} deleted from your phone. Snapback keeps the card.
+          {freedCount} original{freedCount === 1 ? "" : "s"} deleted from your phone. Tuckd keeps the card.
         </Text>
       ) : null}
       {scans === undefined ? (
@@ -185,7 +185,7 @@ export default function PhotosScreen() {
                   accessibilityRole="button"
                   accessibilityLabel="Delete original photo"
                   hitSlop={8}
-                  onPress={() => deleteOriginals([scan])}
+                  onPress={() => freeOriginals([scan])}
                 >
                   <Ionicons name="trash-outline" size={20} color={colors.muted} />
                 </Pressable>

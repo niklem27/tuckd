@@ -1,0 +1,25 @@
+# Revyl Test Definition
+
+test:
+    metadata:
+        name: wishlist
+        platform: ios
+        tags:
+            - snapback
+            - core
+    build:
+        name: Snapback iOS
+    blocks:
+        - type: module_import
+          module: snapback-onboard-demo
+        - type: manual
+          step_type: wait
+          step_description: "15"
+        - type: instructions
+          step_description: Open the Saved tab.
+        - type: validation
+          step_description: A "Wishlist" section is visible and lists the Stride Runner 2 shoe with its $129.00 price.
+        - type: instructions
+          step_description: Tap the Stride Runner 2 entry in the Wishlist.
+        - type: validation
+          step_description: Safari or a web page opens for the product.

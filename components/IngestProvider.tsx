@@ -3,6 +3,7 @@ import { createContext, ReactNode, useContext, useEffect, useRef } from "react";
 import { AppState } from "react-native";
 import { api } from "@/convex/_generated/api";
 import { useIngest } from "@/lib/ingest";
+import { useAutoDeleteOnFocus } from "@/lib/originals";
 
 type IngestValue = ReturnType<typeof useIngest>;
 
@@ -26,6 +27,8 @@ export function IngestProvider({ children }: { children: ReactNode }) {
     });
     return () => sub.remove();
   }, [ready]);
+
+  useAutoDeleteOnFocus(ready && !ingest.uploading);
 
   return <IngestContext.Provider value={ingest}>{children}</IngestContext.Provider>;
 }

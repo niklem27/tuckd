@@ -90,7 +90,7 @@ export const photoScans = query({
         const thumbUrl = shot.thumbStorageId ? await ctx.storage.getUrl(shot.thumbStorageId) : null;
         return {
           _id: shot._id,
-          localAssetId: /^photo:(auto:)?(ph:|file:)/.test(shot.assetId) ? null : shot.assetId.replace(/^photo:(auto:)?/, ""),
+          localAssetId: localAssetIdOf(shot.assetId),
           auto: shot.assetId.startsWith("photo:auto:"),
           status: shot.status,
           bytes: shot.bytes ?? 0,
@@ -101,6 +101,52 @@ export const photoScans = query({
       }),
     );
     return { rows, ignored };
+  },
+});
+
+function localAssetIdOf(assetId: string) {
+  if (/^(demo|agent):/.test(assetId)) return null;
+  const id = assetId.replace(/^photo:(auto:)?/, "");
+  return /^(ph:|file:)/.test(id) ? null : id;
+}
+
+export const deletableOriginals = query({
+  args: { scope: v.union(v.literal("finished"), v.literal("sorted")) },
+  handler: async (ctx, { scope }) => {
+    const userId = await requireUser(ctx).catch(() => null);
+    if (!userId) return [];
+    const rows = [];
+    for (const status of ["done", "skipped"] as const) {
+      const shots = await ctx.db
+        .query("screenshots")
+        .withIndex("by_user_status", (q) => q.eq("userId", userId).eq("status", status))
+        .collect();
+      for (const shot of shots) {
+        if (shot.originalDeleted) continue;
+        const localAssetId = localAssetIdOf(shot.assetId);
+        if (!localAssetId) continue;
+        if (scope === "finished" && status === "done") {
+          const item = await ctx.db
+            .query("items")
+            .withIndex("by_screenshot", (q) => q.eq("screenshotId", shot._id))
+            .first();
+          if (!item || (item.state !== "archived" && item.state !== "done" && item.actedAt === undefined)) continue;
+        }
+        rows.push({ screenshotId: shot._id, localAssetId });
+      }
+    }
+    return rows;
+  },
+});
+
+export const markOriginalsDeleted = mutation({
+  args: { screenshotIds: v.array(v.id("screenshots")) },
+  handler: async (ctx, { screenshotIds }) => {
+    const userId = await requireUser(ctx);
+    for (const id of screenshotIds) {
+      await ownedScreenshot(ctx, userId, id);
+      await ctx.db.patch(id, { originalDeleted: true });
+    }
   },
 });
 

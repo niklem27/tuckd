@@ -26,8 +26,9 @@ export function mapsUrl(location: { name: string; address?: string }) {
   return Platform.OS === "ios" ? `http://maps.apple.com/?q=${q}` : `geo:0,0?q=${q}`;
 }
 
-function normalizeUrl(url: string) {
-  return /^https?:\/\//i.test(url) ? url : `https://${url}`;
+export function productUrl(item: { url?: string; title: string }) {
+  if (item.url) return /^https?:\/\//i.test(item.url) ? item.url : `https://${item.url}`;
+  return `https://www.google.com/search?q=${encodeURIComponent(item.title)}`;
 }
 
 export function useItemActions(notify: (message: string, onUndo?: () => void) => void) {
@@ -38,7 +39,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
   const markActed = useMutation(api.items.markActed);
 
   const doKeep = useCallback(
-    async (item: ActionableItem, message = "Kept") => {
+    async (item: ActionableItem, message = "Tucked ✓") => {
       await keep({ itemId: item._id });
       scheduleItemReminder(item).catch(() => {});
       notify(message, () => {
@@ -81,11 +82,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
             return true;
           }
           case "product": {
-            if (item.url) await Linking.openURL(normalizeUrl(item.url));
-            else
-              await Linking.openURL(
-                `https://www.google.com/search?q=${encodeURIComponent(item.title)}`,
-              );
+            await Linking.openURL(productUrl(item));
             await doKeep(item, "Saved to Products");
             await markActed({ itemId: item._id });
             return true;
@@ -107,7 +104,7 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
             await doKeep(item, "Added to Saved › Recipes");
             return true;
           case "memory":
-            await doKeep(item, "Kept in Memories");
+            await doKeep(item, "Tucked in Memories");
             return true;
         }
       } catch (err) {

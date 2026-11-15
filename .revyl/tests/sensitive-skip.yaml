@@ -27,7 +27,7 @@ test:
             - type: validation
               step_description: The visible card does not mention a bank, an account balance, or Northside Bank.
             - type: instructions
-              step_description: Tap the heart (Keep) button below the card.
+              step_description: Tap the heart (Tuck) button below the card.
         - type: instructions
           step_description: Open the Saved tab.
         - type: validation
