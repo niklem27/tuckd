@@ -11,6 +11,7 @@ import { SyncBanner } from "@/components/SyncBanner";
 import { Toast, ToastState } from "@/components/Toast";
 import { api } from "@/convex/_generated/api";
 import { useItemActions } from "@/lib/actions";
+import { showIntro } from "@/lib/intro";
 import { deleteOriginals } from "@/lib/originals";
 import { isDemoMode, usePalette } from "@/lib/theme";
 import { InboxItem } from "@/lib/types";
@@ -100,10 +101,25 @@ export default function InboxScreen() {
   return (
     <SafeAreaView edges={["top"]} style={[styles.screen, { backgroundColor: colors.background }]}>
       <View style={styles.header}>
-        <Text style={[styles.h1, { color: colors.text }]}>Inbox</Text>
+        <View style={styles.headerLeft}>
+          <Text style={[styles.h1, { color: colors.text }]}>Inbox</Text>
+          {isDemoMode ? (
+            <Pressable
+              testID="btn-show-intro"
+              accessibilityRole="button"
+              accessibilityLabel="Show the intro"
+              hitSlop={8}
+              onPress={showIntro}
+              style={[styles.introPill, { backgroundColor: colors.surface, borderColor: colors.border }]}
+            >
+              <Ionicons name="play-circle-outline" size={14} color={colors.text} />
+              <Text style={{ color: colors.text, fontWeight: "700", fontSize: 13 }}>Intro</Text>
+            </Pressable>
+          ) : null}
+        </View>
         <View style={styles.headerRight}>
           {items && (left > 0 || sorting > 0) ? (
-            <Text testID="inbox-progress" style={[styles.progress, { color: colors.muted }]}>
+            <Text testID="inbox-progress" numberOfLines={1} style={[styles.progress, { color: colors.muted }]}>
               {progress}
             </Text>
           ) : null}
@@ -196,8 +212,10 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   header: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12 },
   h1: { fontSize: 34, fontWeight: "800", letterSpacing: -0.8 },
-  progress: { fontSize: 15, fontWeight: "600" },
-  headerRight: { flexDirection: "row", alignItems: "center", gap: 10 },
+  progress: { fontSize: 15, fontWeight: "600", flexShrink: 1 },
+  headerLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
+  introPill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, borderWidth: 1 },
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 10, flexShrink: 1 },
   undoPill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   error: { marginHorizontal: 20, marginBottom: 8, fontSize: 14 },
   emptyWrap: { flexGrow: 1, justifyContent: "center" },
