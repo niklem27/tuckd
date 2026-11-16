@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import * as Device from "expo-device";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library/legacy";
 import { router, useLocalSearchParams } from "expo-router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { ActivityIndicator, Alert, FlatList, Platform, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
@@ -52,6 +53,10 @@ export default function PhotosScreen() {
         allowsMultipleSelection: source === "library",
         selectionLimit: MAX_PICK,
       };
+      if (source === "camera" && Platform.OS === "ios" && !Device.isDevice) {
+        Alert.alert("No camera on this simulator", "Use Pick photos instead, or open the link on a real iPhone.");
+        return;
+      }
       try {
         if (source === "camera") {
           const perm = await ImagePicker.requestCameraPermissionsAsync();
