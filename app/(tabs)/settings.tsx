@@ -92,7 +92,7 @@ export default function SettingsScreen() {
           <View style={styles.toggleRow}>
             <View style={{ flex: 1 }}>
               <Text style={[styles.rowTitle, { color: colors.text }]}>Delete originals after sorting</Text>
-              <Text style={{ color: colors.muted, fontSize: 13 }}>Once you act on or archive a card, its screenshot or photo is removed from your phone</Text>
+              <Text style={{ color: colors.muted, fontSize: 13 }}>Also remove a screenshot or photo from your phone once you act on its card. Deleted cards always remove theirs at the end of each set.</Text>
             </View>
             <Switch
               testID="toggle-delete-originals"

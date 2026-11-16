@@ -1,4 +1,4 @@
-import { useConvexAuth, useQuery } from "convex/react";
+import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Ionicons } from "@expo/vector-icons";
 import { ActivityIndicator, Pressable, RefreshControl, ScrollView, StyleSheet, Text, View } from "react-native";
@@ -11,6 +11,7 @@ import { SyncBanner } from "@/components/SyncBanner";
 import { Toast, ToastState } from "@/components/Toast";
 import { api } from "@/convex/_generated/api";
 import { useItemActions } from "@/lib/actions";
+import { deleteOriginals } from "@/lib/originals";
 import { isDemoMode, usePalette } from "@/lib/theme";
 import { InboxItem } from "@/lib/types";
 
@@ -22,6 +23,10 @@ export default function InboxScreen() {
   const items = useQuery(api.items.inbox, isAuthenticated ? {} : "skip");
   const status = useQuery(api.screenshots.syncStatus, isAuthenticated ? {} : "skip");
   const stats = useQuery(api.items.stats, isAuthenticated ? {} : "skip");
+  const marked = useQuery(api.screenshots.deletableOriginals, isAuthenticated ? { scope: "deleted" } : "skip");
+  const markDeleted = useMutation(api.screenshots.markOriginalsDeleted);
+  const [deleting, setDeleting] = useState(false);
+  const sawCards = useRef(false);
   const { sync, loadDemo, uploading, error } = useIngestContext();
   const [refreshing, setRefreshing] = useState(false);
   const [toast, setToast] = useState<ToastState>(null);
@@ -64,6 +69,31 @@ export default function InboxScreen() {
 
   const sorting = status?.sorting ?? 0;
   const left = items?.length ?? 0;
+  const markedCount = marked?.length ?? 0;
+
+  const deleteMarked = useCallback(async () => {
+    if (!marked?.length) return;
+    setDeleting(true);
+    try {
+      const n = await deleteOriginals(marked, markDeleted);
+      if (n > 0) notify(`Deleted ${n} photo${n === 1 ? "" : "s"} from your phone`);
+    } catch (err) {
+      notify(err instanceof Error ? err.message : "Couldn't delete the photos");
+    } finally {
+      setDeleting(false);
+    }
+  }, [marked, markDeleted, notify]);
+
+  useEffect(() => {
+    if (items === undefined || marked === undefined) return;
+    if (left > 0) {
+      sawCards.current = true;
+      return;
+    }
+    if (!sawCards.current || markedCount === 0) return;
+    sawCards.current = false;
+    deleteMarked();
+  }, [items, marked, left, markedCount, deleteMarked]);
   const progress = [`${left} left`, sorting > 0 ? `${sorting} sorting…` : null].filter(Boolean).join(" · ");
   const failed = status?.failed ?? 0;
 
@@ -76,6 +106,16 @@ export default function InboxScreen() {
             <Text testID="inbox-progress" style={[styles.progress, { color: colors.muted }]}>
               {progress}
             </Text>
+          ) : null}
+          {markedCount > 0 ? (
+            <View
+              testID="pending-deletes"
+              accessibilityLabel={`${markedCount} photo${markedCount === 1 ? "" : "s"} marked for deletion`}
+              style={[styles.undoPill, { backgroundColor: colors.archive + "26" }]}
+            >
+              <Ionicons name="trash-outline" size={14} color={colors.text} />
+              <Text style={{ color: colors.text, fontWeight: "700", fontSize: 14 }}>{markedCount}</Text>
+            </View>
           ) : null}
           {lastUndo ? (
             <Pressable
@@ -112,7 +152,22 @@ export default function InboxScreen() {
           contentContainerStyle={styles.emptyWrap}
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.accent} />}
         >
-          {sorting > 0 || uploading ? (
+          {markedCount > 0 ? (
+            <EmptyState
+              icon="trash-outline"
+              title={`${markedCount} photo${markedCount === 1 ? "" : "s"} marked for deletion`}
+              body="You deleted these cards. Remove the originals from your phone in one go."
+              testID="inbox-delete-marked"
+            >
+              <Button
+                label={`Delete ${markedCount} photo${markedCount === 1 ? "" : "s"}`}
+                icon="trash-outline"
+                onPress={deleteMarked}
+                loading={deleting}
+                testID="btn-delete-marked"
+              />
+            </EmptyState>
+          ) : sorting > 0 || uploading ? (
             <EmptyState icon="sparkles" title="Sorting your screenshots…" body="Cards appear here as soon as each one is read." testID="inbox-sorting" />
           ) : (status?.total ?? 0) > 0 ? (
             <EmptyState
