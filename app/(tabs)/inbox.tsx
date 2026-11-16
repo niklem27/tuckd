@@ -119,7 +119,7 @@ export default function InboxScreen() {
         </View>
         <View style={styles.headerRight}>
           {items && (left > 0 || sorting > 0) ? (
-            <Text testID="inbox-progress" style={[styles.progress, { color: colors.muted }]}>
+            <Text testID="inbox-progress" numberOfLines={1} style={[styles.progress, { color: colors.muted }]}>
               {progress}
             </Text>
           ) : null}
@@ -212,10 +212,10 @@ const styles = StyleSheet.create({
   screen: { flex: 1 },
   header: { flexDirection: "row", alignItems: "baseline", justifyContent: "space-between", paddingHorizontal: 20, paddingTop: 8, paddingBottom: 12 },
   h1: { fontSize: 34, fontWeight: "800", letterSpacing: -0.8 },
-  progress: { fontSize: 15, fontWeight: "600" },
+  progress: { fontSize: 15, fontWeight: "600", flexShrink: 1 },
   headerLeft: { flexDirection: "row", alignItems: "center", gap: 10 },
   introPill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 10, paddingVertical: 5, borderRadius: 999, borderWidth: 1 },
-  headerRight: { flexDirection: "row", alignItems: "center", gap: 10 },
+  headerRight: { flexDirection: "row", alignItems: "center", gap: 10, flexShrink: 1 },
   undoPill: { flexDirection: "row", alignItems: "center", gap: 4, paddingHorizontal: 10, paddingVertical: 6, borderRadius: 999 },
   error: { marginHorizontal: 20, marginBottom: 8, fontSize: 14 },
   emptyWrap: { flexGrow: 1, justifyContent: "center" },
