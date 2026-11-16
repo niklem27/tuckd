@@ -37,6 +37,7 @@ export function useIntroOnEveryOpen(enabled: boolean) {
         returningFromLink = false;
         if (skip) return;
         shown = false;
+        if (router.canDismiss()) router.dismissAll();
         router.replace("/(onboarding)");
       }, 300);
     });
