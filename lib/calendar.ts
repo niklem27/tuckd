@@ -1,6 +1,6 @@
 import * as Calendar from "expo-calendar/legacy";
-import * as Linking from "expo-linking";
 import { Platform } from "react-native";
+import { openExternal } from "@/lib/intro";
 
 type EventLike = {
   title: string;
@@ -62,7 +62,7 @@ export function googleCalendarUrl(item: EventLike) {
 export async function addToCalendar(item: EventLike, target: "device" | "google" = "device") {
   const { start, end, location, notes } = eventDetails(item);
   if (target === "google") {
-    await Linking.openURL(googleCalendarUrl(item));
+    await openExternal(googleCalendarUrl(item));
     return "Google Calendar";
   }
   const { status } = await Calendar.requestCalendarPermissionsAsync();

@@ -7,7 +7,8 @@ import { Platform } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
 import { AuthGate } from "@/components/AuthGate";
 import { IngestProvider } from "@/components/IngestProvider";
-import { usePalette } from "@/lib/theme";
+import { useIntroOnEveryOpen } from "@/lib/intro";
+import { isDemoMode, usePalette } from "@/lib/theme";
 
 const convex = new ConvexReactClient(process.env.EXPO_PUBLIC_CONVEX_URL!, { unsavedChangesWarning: false });
 
@@ -19,6 +20,7 @@ const secureStorage = {
 
 export default function RootLayout() {
   const { colors, dark } = usePalette();
+  useIntroOnEveryOpen(isDemoMode);
   const base = dark ? DarkTheme : DefaultTheme;
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

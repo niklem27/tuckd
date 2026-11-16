@@ -1,8 +1,8 @@
 import { Ionicons } from "@expo/vector-icons";
 import { Image } from "expo-image";
-import * as Linking from "expo-linking";
 import { Pressable, StyleSheet, Text, View } from "react-native";
 import { productUrl } from "@/lib/actions";
+import { openExternal } from "@/lib/intro";
 import { typeMeta, usePalette } from "@/lib/theme";
 
 type WishlistEntry = { _id: string; title: string; price?: string; url?: string; thumbUrl: string | null };
@@ -25,7 +25,7 @@ export function WishlistSection({ items }: { items: WishlistEntry[] }) {
             testID={`wishlist-item-${i}`}
             accessibilityRole="link"
             accessibilityLabel={`Open ${item.title}${item.price ? `, ${item.price}` : ""}`}
-            onPress={() => Linking.openURL(productUrl(item))}
+            onPress={() => openExternal(productUrl(item))}
             style={({ pressed }) => [
               styles.row,
               i > 0 && { borderTopWidth: StyleSheet.hairlineWidth, borderTopColor: colors.border },
