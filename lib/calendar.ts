@@ -55,7 +55,8 @@ export function googleCalendarUrl(item: EventLike) {
     ctz: Intl.DateTimeFormat().resolvedOptions().timeZone,
   });
   if (location) params.set("location", location);
-  return `https://calendar.google.com/calendar/render?${params.toString()}`;
+  const event = `https://calendar.google.com/calendar/render?${params.toString()}`;
+  return `https://accounts.google.com/ServiceLogin?${new URLSearchParams({ service: "cl", continue: event }).toString()}`;
 }
 
 export async function addToCalendar(item: EventLike, target: "device" | "google" = "device") {
