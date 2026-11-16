@@ -1,11 +1,12 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
+import * as Device from "expo-device";
 import { Image } from "expo-image";
 import * as ImagePicker from "expo-image-picker";
 import * as MediaLibrary from "expo-media-library/legacy";
-import { router } from "expo-router";
-import { useState } from "react";
-import { ActivityIndicator, Alert, FlatList, Pressable, StyleSheet, Switch, Text, View } from "react-native";
+import { router, useLocalSearchParams } from "expo-router";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { ActivityIndicator, Alert, FlatList, Platform, Pressable, StyleSheet, Switch, Text, View } from "react-native";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { EmptyState } from "@/components/EmptyState";
@@ -28,6 +29,8 @@ export default function PhotosScreen() {
   const autoScan = me?.profile?.autoScanPhotos ?? false;
   const markDeleted = useMutation(api.screenshots.markOriginalsDeleted);
   const { scanPhotos, sync, uploading } = useIngestContext();
+  const { snap } = useLocalSearchParams<{ snap?: string }>();
+  const snapHandled = useRef(false);
 
   const toggleAutoScan = async (next: boolean) => {
     if (next) {
@@ -42,25 +45,47 @@ export default function PhotosScreen() {
   };
   const [freeing, setFreeing] = useState(false);
 
-  const pick = async (source: "library" | "camera") => {
-    const options: ImagePicker.ImagePickerOptions = {
-      mediaTypes: ["images"],
-      quality: 1,
-      allowsMultipleSelection: source === "library",
-      selectionLimit: MAX_PICK,
-    };
-    if (source === "camera") {
-      const perm = await ImagePicker.requestCameraPermissionsAsync();
-      if (!perm.granted) {
-        Alert.alert("Camera access is off", "Turn it on in Settings to snap posters directly.");
+  const pick = useCallback(
+    async (source: "library" | "camera") => {
+      const options: ImagePicker.ImagePickerOptions = {
+        mediaTypes: ["images"],
+        quality: 1,
+        allowsMultipleSelection: source === "library",
+        selectionLimit: MAX_PICK,
+      };
+      if (source === "camera" && Platform.OS === "ios" && !Device.isDevice) {
+        Alert.alert("No camera on this simulator", "Use Pick photos instead, or open the link on a real iPhone.");
         return;
       }
+      try {
+        if (source === "camera") {
+          const perm = await ImagePicker.requestCameraPermissionsAsync();
+          if (!perm.granted) {
+            Alert.alert("Camera access is off", "Turn it on in Settings to snap posters directly.");
+            return;
+          }
+        }
+        const result =
+          source === "camera" ? await ImagePicker.launchCameraAsync(options) : await ImagePicker.launchImageLibraryAsync(options);
+        if (result.canceled) return;
+        await scanPhotos(result.assets.map((a) => ({ assetId: a.assetId, uri: a.uri, width: a.width, height: a.height })));
+      } catch (err) {
+        Alert.alert(source === "camera" ? "Couldn't open the camera" : "Couldn't open your photos", err instanceof Error ? err.message : String(err));
+      }
+    },
+    [scanPhotos],
+  );
+
+  useEffect(() => {
+    if (snap !== "1") {
+      snapHandled.current = false;
+      return;
     }
-    const result =
-      source === "camera" ? await ImagePicker.launchCameraAsync(options) : await ImagePicker.launchImageLibraryAsync(options);
-    if (result.canceled) return;
-    await scanPhotos(result.assets.map((a) => ({ assetId: a.assetId, uri: a.uri, width: a.width, height: a.height })));
-  };
+    if (!isAuthenticated || snapHandled.current) return;
+    snapHandled.current = true;
+    pick("camera");
+    router.setParams({ snap: undefined });
+  }, [snap, isAuthenticated, pick]);
 
   const freeable = (scans ?? []).filter((s) => s.localAssetId && !s.originalDeleted && (s.status === "done" || s.status === "skipped"));
 
