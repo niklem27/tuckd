@@ -7,7 +7,7 @@ People take hundreds of screenshots of flyers, restaurants, products, recipes an
 ## How it works
 1. **Snap.** Take screenshots like you always do.
 2. **Sort.** Tuckd's AI reads each one and turns it into a card: event, place, product, recipe, to-do or memory. Sensitive screenshots like bank balances and 2FA codes are skipped automatically.
-3. **Swipe.** Right to tuck it, left to archive, up to act: add the event to your calendar, open the place in Maps, or set a reminder.
+3. **Swipe.** Right to tuck it, left to delete it, up to skip it for now. Tap the card's button to act: add the event to your calendar, open the place in Maps, or set a reminder.
 4. **Return.** Every morning, Tuckd tells you which of your saved things matter today.
 
 ## Features

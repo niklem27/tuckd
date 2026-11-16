@@ -23,10 +23,12 @@ const DELETE_INK = "#173A40";
 
 function TopCard({
   item,
+  canSkip,
   onSwiped,
   onAct,
 }: {
   item: InboxItem;
+  canSkip: boolean;
   onSwiped: (dir: SwipeDirection) => void;
   onAct: () => void;
 }) {
@@ -56,7 +58,7 @@ function TopCard({
       const fastX = Math.abs(e.velocityX) > 900;
       if (x.value > thresholdX || (fastX && e.velocityX > 0 && x.value > 40)) fling("right");
       else if (x.value < -thresholdX || (fastX && e.velocityX < 0 && x.value < -40)) fling("left");
-      else if (y.value < -thresholdY || (e.velocityY < -1000 && y.value < -40)) fling("up");
+      else if (canSkip && (y.value < -thresholdY || (e.velocityY < -1000 && y.value < -40))) fling("up");
       else {
         x.value = withSpring(0, SPRING);
         y.value = withSpring(0, SPRING);
@@ -82,7 +84,7 @@ function TopCard({
   const archiveStampStyle = useAnimatedStyle(() => ({
     transform: [{ scale: interpolate(x.value, [-thresholdX, -8], [1.05, 0.7], Extrapolation.CLAMP) }, { rotate: "8deg" }],
   }));
-  const actStyle = useAnimatedStyle(() => ({
+  const skipStyle = useAnimatedStyle(() => ({
     opacity: interpolate(y.value, [-thresholdY, -20], [1, 0], Extrapolation.CLAMP) * (Math.abs(x.value) < 60 ? 1 : 0),
   }));
 
@@ -104,9 +106,11 @@ function TopCard({
             <Text style={[styles.stamp, { color: DELETE_INK }]}>DELETE</Text>
           </Animated.View>
         </Animated.View>
-        <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.accent + "33" }, actStyle]}>
-          <Text style={[styles.stamp, styles.actStamp, { color: colors.accent, borderColor: colors.accent }]}>ACT NOW</Text>
-        </Animated.View>
+        {canSkip ? (
+          <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.accent + "33" }, skipStyle]}>
+            <Text style={[styles.stamp, styles.skipStamp, { color: colors.accent, borderColor: colors.accent }]}>SKIP</Text>
+          </Animated.View>
+        ) : null}
       </Animated.View>
     </GestureDetector>
   );
@@ -172,7 +176,12 @@ export function SwipeDeck({
           </Animated.View>
         ) : null}
         <Animated.View key={top._id} style={[StyleSheet.absoluteFill, topEnter]}>
-          <TopCard item={top} onSwiped={(dir) => commit(top, dir)} onAct={() => commit(top, "up")} />
+          <TopCard
+            item={top}
+            canSkip={visible.length > 1}
+            onSwiped={(dir) => (dir === "up" ? skip(top) : commit(top, dir))}
+            onAct={() => commit(top, "up")}
+          />
         </Animated.View>
       </View>
       <View style={styles.controls}>
@@ -224,7 +233,7 @@ const styles = StyleSheet.create({
   overlayFill: { ...StyleSheet.absoluteFill, opacity: 0.9 },
   stampWrap: { alignItems: "center", gap: 4, borderWidth: 5, borderRadius: 20, paddingHorizontal: 26, paddingVertical: 14 },
   stamp: { fontSize: 46, fontWeight: "900", letterSpacing: 4 },
-  actStamp: { fontSize: 38, letterSpacing: 3, borderWidth: 4, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 6 },
+  skipStamp: { fontSize: 38, letterSpacing: 3, borderWidth: 4, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 6 },
   controls: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 28, paddingVertical: 18 },
   round: {
     alignItems: "center",
