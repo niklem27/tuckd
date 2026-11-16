@@ -17,6 +17,12 @@ export function openExternal(url: string) {
   return Linking.openURL(url);
 }
 
+export function showIntro() {
+  shown = false;
+  if (router.canDismiss()) router.dismissAll();
+  router.replace("/(onboarding)");
+}
+
 export function useIntroOnEveryOpen(enabled: boolean) {
   const segments = useSegments();
   const onIntro = useRef(false);
@@ -35,9 +41,7 @@ export function useIntroOnEveryOpen(enabled: boolean) {
       setTimeout(() => {
         const skip = returningFromLink || onIntro.current;
         returningFromLink = false;
-        if (skip) return;
-        shown = false;
-        router.replace("/(onboarding)");
+        if (!skip) showIntro();
       }, 300);
     });
     return () => {

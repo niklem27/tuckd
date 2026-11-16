@@ -121,7 +121,8 @@ export function SwipeDeck({
 }) {
   const { colors } = usePalette();
   const [hidden, setHidden] = useState<Set<string>>(new Set());
-  const visible = items.filter((i) => !hidden.has(i._id));
+  const [skipped, setSkipped] = useState<string[]>([]);
+  const visible = items.filter((i) => !hidden.has(i._id)).sort((a, b) => skipped.indexOf(a._id) - skipped.indexOf(b._id));
   const top = visible[0];
   const next = visible[1];
   const scale = useSharedValue(0.94);
@@ -155,6 +156,11 @@ export function SwipeDeck({
     });
   };
 
+  const skip = (item: InboxItem) => {
+    Haptics.selectionAsync().catch(() => {});
+    setSkipped((prev) => [...prev.filter((id) => id !== item._id), item._id]);
+  };
+
   if (!top) return null;
 
   return (
@@ -171,7 +177,7 @@ export function SwipeDeck({
       </View>
       <View style={styles.controls}>
         <RoundButton testID="btn-archive" label="Delete" icon="close" color={colors.archive} onPress={() => commit(top, "left")} />
-        <RoundButton testID="btn-act-now" label="Act now" icon="flash" color={colors.accent} small onPress={() => commit(top, "up")} />
+        <RoundButton testID="btn-skip-card" label="Skip" icon="flash" color={colors.accent} small onPress={() => skip(top)} />
         <RoundButton testID="btn-keep" label="Tuck" icon="heart" color={colors.accent} onPress={() => commit(top, "right")} />
       </View>
     </View>
