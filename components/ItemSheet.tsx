@@ -1,7 +1,6 @@
 import { Ionicons } from "@expo/vector-icons";
 import { useMutation, useQuery } from "convex/react";
 import { Image } from "expo-image";
-import * as Linking from "expo-linking";
 import { router } from "expo-router";
 import { useState } from "react";
 import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from "react-native";
@@ -12,6 +11,7 @@ import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useItemActions, mapsUrl } from "@/lib/actions";
 import { DAY, formatWhen } from "@/lib/format";
+import { openExternal } from "@/lib/intro";
 import { ITEM_TYPES, ItemType, typeMeta, usePalette } from "@/lib/theme";
 
 export function ItemSheet({ itemId }: { itemId: Id<"items"> }) {
@@ -87,8 +87,8 @@ export function ItemSheet({ itemId }: { itemId: Id<"items"> }) {
               style={styles.field}
               disabled={label !== "Link" && label !== "Place"}
               onPress={() => {
-                if (label === "Link" && item.url) Linking.openURL(/^https?:/.test(item.url) ? item.url : `https://${item.url}`);
-                if (label === "Place" && item.location) Linking.openURL(mapsUrl(item.location));
+                if (label === "Link" && item.url) openExternal(/^https?:/.test(item.url) ? item.url : `https://${item.url}`);
+                if (label === "Place" && item.location) openExternal(mapsUrl(item.location));
               }}
             >
               <Ionicons name={icon as any} size={18} color={meta.color} />

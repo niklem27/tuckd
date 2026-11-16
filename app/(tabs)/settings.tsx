@@ -1,5 +1,4 @@
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
-import * as Linking from "expo-linking";
 import * as Notifications from "expo-notifications";
 import { ReactNode, useState } from "react";
 import { Alert, ScrollView, StyleSheet, Switch, Text, View } from "react-native";
@@ -7,6 +6,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { useIngestContext } from "@/components/IngestProvider";
 import { api } from "@/convex/_generated/api";
+import { openExternal } from "@/lib/intro";
 import { deleteOriginals } from "@/lib/originals";
 import { DAY, formatBytes, startOfDay } from "@/lib/format";
 import { getPushToken, previewMorningBrief, requestNotificationPermission } from "@/lib/notifications";
@@ -131,7 +131,7 @@ export default function SettingsScreen() {
               testID="btn-text-snapback"
               onPress={async () => {
                 const code = await linkCode();
-                await Linking.openURL(`${AGENT_URL}?start=${code}`);
+                await openExternal(`${AGENT_URL}?start=${code}`);
               }}
             />
           </Group>

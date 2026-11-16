@@ -1,12 +1,12 @@
 import { useConvexAuth, useMutation, useQuery } from "convex/react";
 import * as Haptics from "expo-haptics";
-import * as Linking from "expo-linking";
 import { useCallback } from "react";
 import { Alert, Platform } from "react-native";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { addToCalendar } from "@/lib/calendar";
 import { formatFullDate, formatTime } from "@/lib/format";
+import { openExternal } from "@/lib/intro";
 import { cancelItemReminder, scheduleItemReminder } from "@/lib/notifications";
 
 export type ActionableItem = {
@@ -79,13 +79,13 @@ export function useItemActions(notify: (message: string, onUndo?: () => void) =>
           }
           case "place": {
             if (!item.location) throw new Error("No location found on this screenshot.");
-            await Linking.openURL(mapsUrl(item.location));
+            await openExternal(mapsUrl(item.location));
             await doKeep(item, `Saved ${item.location.name} to Places`);
             await markActed({ itemId: item._id });
             return true;
           }
           case "product": {
-            await Linking.openURL(productUrl(item));
+            await openExternal(productUrl(item));
             await doKeep(item, "Saved to Products");
             await markActed({ itemId: item._id });
             return true;
