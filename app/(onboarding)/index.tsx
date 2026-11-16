@@ -9,6 +9,7 @@ import { SafeAreaView } from "react-native-safe-area-context";
 import { Button } from "@/components/Button";
 import { api } from "@/convex/_generated/api";
 import { PhotoAccess, presentLimitedPicker, requestPhotoAccess } from "@/lib/ingest";
+import { markIntroShown } from "@/lib/intro";
 import { getPushToken, requestNotificationPermission } from "@/lib/notifications";
 import { typeMeta, usePalette } from "@/lib/theme";
 
@@ -20,6 +21,7 @@ export default function Onboarding() {
   const savePushToken = useMutation(api.notifications.savePushToken);
 
   const finish = async () => {
+    markIntroShown();
     await upsert({ onboarded: true, timezone: Intl.DateTimeFormat().resolvedOptions().timeZone });
     router.replace("/(tabs)/inbox");
   };
