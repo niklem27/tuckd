@@ -19,6 +19,7 @@ import { InboxItem } from "@/lib/types";
 export type SwipeDirection = "right" | "left" | "up";
 
 const SPRING = { damping: 18, stiffness: 180, mass: 0.8 };
+const DELETE_INK = "#173A40";
 
 function TopCard({
   item,
@@ -70,10 +71,16 @@ function TopCard({
     ],
   }));
   const keepStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(x.value, [20, thresholdX], [0, 1], Extrapolation.CLAMP),
+    opacity: interpolate(x.value, [8, thresholdX * 0.7], [0, 1], Extrapolation.CLAMP),
+  }));
+  const keepStampStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(x.value, [8, thresholdX], [0.7, 1.05], Extrapolation.CLAMP) }, { rotate: "-8deg" }],
   }));
   const archiveStyle = useAnimatedStyle(() => ({
-    opacity: interpolate(x.value, [-thresholdX, -20], [1, 0], Extrapolation.CLAMP),
+    opacity: interpolate(x.value, [-thresholdX * 0.7, -8], [1, 0], Extrapolation.CLAMP),
+  }));
+  const archiveStampStyle = useAnimatedStyle(() => ({
+    transform: [{ scale: interpolate(x.value, [-thresholdX, -8], [1.05, 0.7], Extrapolation.CLAMP) }, { rotate: "8deg" }],
   }));
   const actStyle = useAnimatedStyle(() => ({
     opacity: interpolate(y.value, [-thresholdY, -20], [1, 0], Extrapolation.CLAMP) * (Math.abs(x.value) < 60 ? 1 : 0),
@@ -83,14 +90,22 @@ function TopCard({
     <GestureDetector gesture={pan}>
       <Animated.View style={[StyleSheet.absoluteFill, cardStyle]}>
         <ItemCard item={item} index={0} onAct={onAct} />
-        <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.keep + "33" }, keepStyle]}>
-          <Text style={[styles.stamp, { color: colors.keep, borderColor: colors.keep, transform: [{ rotate: "-12deg" }] }]}>TUCK</Text>
+        <Animated.View pointerEvents="none" style={[styles.overlay, keepStyle]}>
+          <View style={[styles.overlayFill, { backgroundColor: colors.keep }]} />
+          <Animated.View style={[styles.stampWrap, { borderColor: colors.onPrimary }, keepStampStyle]}>
+            <Ionicons name="heart" size={56} color={colors.onPrimary} />
+            <Text style={[styles.stamp, { color: colors.onPrimary }]}>TUCK</Text>
+          </Animated.View>
         </Animated.View>
-        <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.archive + "33" }, archiveStyle]}>
-          <Text style={[styles.stamp, { color: colors.archive, borderColor: colors.archive, transform: [{ rotate: "12deg" }] }]}>DELETE</Text>
+        <Animated.View pointerEvents="none" style={[styles.overlay, archiveStyle]}>
+          <View style={[styles.overlayFill, { backgroundColor: colors.archive }]} />
+          <Animated.View style={[styles.stampWrap, { borderColor: DELETE_INK }, archiveStampStyle]}>
+            <Ionicons name="trash" size={56} color={DELETE_INK} />
+            <Text style={[styles.stamp, { color: DELETE_INK }]}>DELETE</Text>
+          </Animated.View>
         </Animated.View>
         <Animated.View pointerEvents="none" style={[styles.overlay, { backgroundColor: colors.accent + "33" }, actStyle]}>
-          <Text style={[styles.stamp, { color: colors.accent, borderColor: colors.accent }]}>ACT NOW</Text>
+          <Text style={[styles.stamp, styles.actStamp, { color: colors.accent, borderColor: colors.accent }]}>ACT NOW</Text>
         </Animated.View>
       </Animated.View>
     </GestureDetector>
@@ -199,8 +214,11 @@ function RoundButton({
 const styles = StyleSheet.create({
   wrap: { flex: 1, paddingHorizontal: 20 },
   stack: { flex: 1 },
-  overlay: { ...StyleSheet.absoluteFill, borderRadius: 16, alignItems: "center", justifyContent: "center" },
-  stamp: { fontSize: 38, fontWeight: "900", letterSpacing: 3, borderWidth: 4, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 6 },
+  overlay: { ...StyleSheet.absoluteFill, borderRadius: 16, overflow: "hidden", alignItems: "center", justifyContent: "center" },
+  overlayFill: { ...StyleSheet.absoluteFill, opacity: 0.9 },
+  stampWrap: { alignItems: "center", gap: 4, borderWidth: 5, borderRadius: 20, paddingHorizontal: 26, paddingVertical: 14 },
+  stamp: { fontSize: 46, fontWeight: "900", letterSpacing: 4 },
+  actStamp: { fontSize: 38, letterSpacing: 3, borderWidth: 4, borderRadius: 12, paddingHorizontal: 16, paddingVertical: 6 },
   controls: { flexDirection: "row", justifyContent: "center", alignItems: "center", gap: 28, paddingVertical: 18 },
   round: {
     alignItems: "center",
