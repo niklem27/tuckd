@@ -10,7 +10,7 @@ export async function deleteOriginals(rows: Original[], markDeleted: (args: { sc
   if (rows.length === 0) return 0;
   const perm = await MediaLibrary.requestPermissionsAsync(false, ["photo"]);
   if (!perm.granted) throw new Error("Photo access is needed to delete originals.");
-  const ok = await MediaLibrary.deleteAssetsAsync(rows.map((r) => r.localAssetId));
+  const ok = await MediaLibrary.deleteAssetsAsync(rows.map((r) => r.localAssetId)).catch(() => false);
   if (!ok) return 0;
   await markDeleted({ screenshotIds: rows.map((r) => r.screenshotId) });
   return rows.length;

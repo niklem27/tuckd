@@ -111,7 +111,7 @@ function localAssetIdOf(assetId: string) {
 }
 
 export const deletableOriginals = query({
-  args: { scope: v.union(v.literal("finished"), v.literal("sorted")) },
+  args: { scope: v.union(v.literal("finished"), v.literal("sorted"), v.literal("deleted")) },
   handler: async (ctx, { scope }) => {
     const userId = await requireUser(ctx).catch(() => null);
     if (!userId) return [];
@@ -125,12 +125,19 @@ export const deletableOriginals = query({
         if (shot.originalDeleted) continue;
         const localAssetId = localAssetIdOf(shot.assetId);
         if (!localAssetId) continue;
-        if (scope === "finished" && status === "done") {
-          const item = await ctx.db
-            .query("items")
-            .withIndex("by_screenshot", (q) => q.eq("screenshotId", shot._id))
-            .first();
-          if (!item || (item.state !== "archived" && item.state !== "done" && item.actedAt === undefined)) continue;
+        if (scope !== "sorted") {
+          if (status !== "done") {
+            if (scope === "deleted") continue;
+          } else {
+            const item = await ctx.db
+              .query("items")
+              .withIndex("by_screenshot", (q) => q.eq("screenshotId", shot._id))
+              .first();
+            if (!item) continue;
+            const deleted = item.state === "archived";
+            const finished = !deleted && (item.state === "done" || item.actedAt !== undefined);
+            if (scope === "deleted" ? !deleted : !finished) continue;
+          }
         }
         rows.push({ screenshotId: shot._id, localAssetId });
       }
